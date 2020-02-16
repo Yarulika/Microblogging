@@ -53,7 +53,6 @@ public class User {
     )
     private Set<User> blockedUsers;
 
-    @OneToMany
-    @JoinColumn(name="follower_id")
+    @OneToMany(mappedBy = "id")
     private Set<Follower> followers;
 }

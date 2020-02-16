@@ -19,10 +19,12 @@ public class Follower {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "follower_user_id")
+    @ManyToOne
+    @JoinColumn(name = "follower_user_id")
     private User follower;
 
     @Column(name = "following_date")
