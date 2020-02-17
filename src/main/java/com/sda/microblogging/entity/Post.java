@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GeneratorType;
-import org.springframework.data.jpa.repository.Temporal;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import java.sql.Date;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -41,5 +40,13 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "original_post_id")
     private Post originalPost;
+
+    @ManyToMany
+    @JoinTable(
+            name = "post_tags",
+            joinColumns = {@JoinColumn(name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")}
+    )
+    private Set<Tag> tags;
 
 }

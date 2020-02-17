@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import java.sql.Date;
 
 @Entity
@@ -15,8 +16,14 @@ import java.sql.Date;
 @AllArgsConstructor
 public class Comment {
     @Id
+    @Column(name = "comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    //TODO add contents in database
+    @Column
+    @Max(160)
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "post_id")

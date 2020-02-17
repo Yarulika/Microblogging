@@ -42,13 +42,14 @@ public class User {
     @Column(name = "creation_date")
     private Date creationDate;
 
-    @Column(name = "is_admin")
-    private boolean isAdmin;
+    // TODO change name in database
+    @Column(name = "role")
+    private Role role;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "blocked_user",
-            joinColumns= {@JoinColumn(name = "user_id")},
+            name = "blocked_users",
+            joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "blocked_user_id")}
     )
     private Set<User> blockedUsers;
