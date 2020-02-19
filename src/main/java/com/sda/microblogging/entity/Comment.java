@@ -20,7 +20,6 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    //TODO add contents in database
     @Column
     @Max(160)
     private String content;
@@ -39,6 +38,4 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "comment_parent_id")
     private Comment commentParent;
-
-
 }

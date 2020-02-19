@@ -20,7 +20,6 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // TODO change name to title
     @Enumerated(EnumType.STRING)
     private RoleTitle title;
 }

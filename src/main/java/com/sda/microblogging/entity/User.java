@@ -42,8 +42,8 @@ public class User {
     @Column(name = "creation_date")
     private Date creationDate;
 
-    // TODO change name in database
-    @Column(name = "role")
+    @ManyToOne
+    @JoinColumn(name = "user_role_id")
     private Role role;
 
     @ManyToMany(fetch = FetchType.EAGER)
