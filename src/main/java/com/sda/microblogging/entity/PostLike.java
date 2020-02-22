@@ -7,7 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.sql.Date;
 
-@Entity
+@Entity(name = "post_likes")
 @RequiredArgsConstructor
 @Getter
 @Setter
