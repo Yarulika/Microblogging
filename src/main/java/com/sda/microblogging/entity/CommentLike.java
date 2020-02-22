@@ -13,6 +13,7 @@ import java.sql.Date;
 @Setter
 public class CommentLike {
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -24,7 +25,6 @@ public class CommentLike {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // TODO change in database
-    @Column(name = "commented_date")
-    private Date commentedDate;
+    @Column(name = "liked_date")
+    private Date likedDate;
 }

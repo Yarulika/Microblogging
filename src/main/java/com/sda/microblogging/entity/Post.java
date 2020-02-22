@@ -22,7 +22,6 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-  //TODO contents type change to String
     @Column
     @Max(160)
     private String content;

@@ -24,7 +24,6 @@ public class PostLike {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // TODO change in database
     @Column(name = "liked_date")
     private Date likedDate;
 }
