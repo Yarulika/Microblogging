@@ -8,7 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.sql.Date;
 
-@Entity
+@Entity(name = "followers")
 @Getter
 @Setter
 @NoArgsConstructor

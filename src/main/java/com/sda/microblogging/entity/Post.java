@@ -10,7 +10,7 @@ import javax.validation.constraints.Max;
 import java.sql.Date;
 import java.util.Set;
 
-@Entity
+@Entity(name = "posts")
 @Getter
 @Setter
 @NoArgsConstructor

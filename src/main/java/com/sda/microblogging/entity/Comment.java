@@ -9,7 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import java.sql.Date;
 
-@Entity
+@Entity(name = "comments")
 @Getter
 @Setter
 @NoArgsConstructor
