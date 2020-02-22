@@ -2,9 +2,13 @@ ALTER TABLE users CHANGE `privacy` `is_private` int;
 
 ALTER TABLE users CHANGE `account_status` `is_blocked` int;
 
-ALTER TABLE users CHANGE `user_role` `role` int;
+ALTER TABLE users CHANGE `user_role` `user_role_id` int;
+
+ALTER TABLE users CHANGE `username` `username` VARCHAR(45);
 
 ALTER TABLE user_role CHANGE `name` `title` varchar(20);
+
+RENAME TABLE `user_role` TO `user_roles`;
 
 ALTER TABLE followers add column id int PRIMARY KEY;
 
