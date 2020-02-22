@@ -65,16 +65,19 @@ public class User {
         User user = (User) o;
         return isPrivate() == user.isPrivate() &&
                 isBlocked() == user.isBlocked() &&
+                getUserId().equals(user.getUserId()) &&
                 getUsername().equals(user.getUsername()) &&
                 getPassword().equals(user.getPassword()) &&
                 getEmail().equals(user.getEmail()) &&
                 Objects.equals(getAvatar(), user.getAvatar()) &&
                 Objects.equals(getCreationDate(), user.getCreationDate()) &&
-                Objects.equals(getRole(), user.getRole());
+                Objects.equals(getRole(), user.getRole()) &&
+                Objects.equals(getBlockedUsers(), user.getBlockedUsers()) &&
+                Objects.equals(getFollowers(), user.getFollowers());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole());
+        return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers(), getFollowers());
     }
 }
