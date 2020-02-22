@@ -10,7 +10,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import java.util.Set;
 
-
 @Entity
 @Getter
 @Setter

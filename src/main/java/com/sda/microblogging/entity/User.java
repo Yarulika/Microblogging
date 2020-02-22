@@ -43,7 +43,7 @@ public class User {
     private Date creationDate;
 
     @ManyToOne
-    @JoinColumn(name = "role")
+    @JoinColumn(name = "user_role_id")
     private Role role;
 
     @ManyToMany(fetch = FetchType.EAGER)
