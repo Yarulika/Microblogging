@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Date;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -93,12 +92,12 @@ class FollowerServiceTest {
     }
 
     @Test
-    public void findSpecificFollowerByUserAndFollowerId_with_valid_id_should_return_a_follower() {
+    public void getSpecificFollowerByUserAndFollowerId_with_valid_id_should_return_a_follower() {
         Integer userId = user.getUserId();
         Integer followerId = followerUser.getUserId();
 
         when(followerRepository.findFollowerByUserAndFollower(anyInt(), anyInt())).thenReturn(Optional.of(expectedFollowerDetail));
-        Optional<Follower> specificFollower = followerService.findFollowerByUserIdAndFollowerId(userId, followerId);
+        Optional<Follower> specificFollower = followerService.getFollowerByUserIdAndFollowerId(userId, followerId);
 
         assertThat(specificFollower).containsSame(expectedFollowerDetail);
         assertEquals(specificFollower.get().getId(), expectedFollowerDetail.getId());
