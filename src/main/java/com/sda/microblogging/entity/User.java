@@ -58,7 +58,6 @@ public class User {
     @OneToMany(mappedBy = "id")
     private Set<Follower> followers;
 
-<<<<<<< HEAD
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
