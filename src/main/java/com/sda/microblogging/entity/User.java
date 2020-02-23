@@ -81,6 +81,4 @@ public class User {
     public int hashCode() {
         return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers(), getFollowers());
     }
-=======
->>>>>>> added test for following, unfollowing, getAllFollowers, getAllFollowings
 }

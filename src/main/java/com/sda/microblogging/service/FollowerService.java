@@ -20,7 +20,7 @@ public class FollowerService {
         Integer userId = newFollower.getUser().getUserId();
         Integer followerId = newFollower.getFollower().getUserId();
 
-        if (findFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
+        if (getFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
             throw new RuntimeException("User already followed");
         }
         ;
@@ -30,7 +30,7 @@ public class FollowerService {
 
     public void unFollowUser(Integer userId, Integer followerId) {
 
-        if (!findFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
+        if (!getFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
             throw new RuntimeException("User has been already unfollowed");
         }
 
@@ -45,7 +45,7 @@ public class FollowerService {
         return followerRepository.findAllFollowingByFollower(followerId);
     }
 
-    public Optional<Follower> findFollowerByUserIdAndFollowerId(Integer userId, Integer followerId) {
+    public Optional<Follower> getFollowerByUserIdAndFollowerId(Integer userId, Integer followerId) {
         return followerRepository.findFollowerByUserAndFollower(userId, followerId);
     }
 }
