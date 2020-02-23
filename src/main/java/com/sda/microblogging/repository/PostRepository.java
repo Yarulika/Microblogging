@@ -1,15 +1,11 @@
 package com.sda.microblogging.repository;
 
 import com.sda.microblogging.entity.Post;
-import com.sda.microblogging.entity.PostLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
