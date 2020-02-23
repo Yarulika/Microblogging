@@ -23,13 +23,11 @@ public class FollowerService {
         if (getFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
             throw new RuntimeException("User already followed");
         }
-        ;
 
         return followerRepository.save(newFollower);
     }
 
     public void unFollowUser(Integer userId, Integer followerId) {
-
         if (!getFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
             throw new RuntimeException("User has been already unfollowed");
         }
