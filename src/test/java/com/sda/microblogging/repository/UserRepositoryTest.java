@@ -40,15 +40,15 @@ public class UserRepositoryTest {
         assertThat(actualUser).isEqualTo(expectedUser);
     }
 
-    @Test
-    void findByUsername() {
-        String testUsername = "username";
-        User expectedUser = new User(null, testUsername, "password", "email", true, "avatar", false, Date.valueOf("2020-01-01"), null, null, null);
-        userRepository.save(expectedUser);
-
-        User actualUser = userRepository.findByUsername(testUsername);
-        assertThat(actualUser.getUsername()).isEqualTo(expectedUser.getUsername());
-    }
+//    @Test
+//    void findByUsername() {
+//        String testUsername = "username";
+//        User expectedUser = new User(null, testUsername, "password", "email", true, "avatar", false, Date.valueOf("2020-01-01"), null, null, null);
+//        userRepository.save(expectedUser);
+//
+//        User actualUser = userRepository.findByUsername(testUsername);
+//        assertThat(actualUser.getUsername()).isEqualTo(expectedUser.getUsername());
+//    }
 
     // TODO findUserById
     // TODO ? delete

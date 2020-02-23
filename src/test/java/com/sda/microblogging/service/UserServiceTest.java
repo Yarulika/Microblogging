@@ -53,15 +53,19 @@ public class UserServiceTest {
 
     @Test
     public void save_returns_saved_user(){
+        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(expectedUser);
+
         User actualUser = userService.save(expectedUser);
+
         assertEquals(expectedUser, actualUser);
+        assertEquals(actualUser.getUsername(), expectedUser.getUsername());
     }
 
     @Test
     public void save_with_existing_username_returns_UserDetailsFoundException(){
-        User newUser = new User(null, expectedUser.getUsername(), "extPassword", "extEmail@mail.com", true, "x", false, null, null, null, null);
-        when(userRepository.findByUsername(expectedUser.getUsername())).thenReturn(newUser);
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(expectedUser));
 
         Exception exception = assertThrows(UserDetailsFoundException.class, () -> {
             userService.save(expectedUser);
@@ -71,8 +75,7 @@ public class UserServiceTest {
 
     @Test
     public void save_with_existing_email_returns_UserDetailsFoundException(){
-        User emlUser = new User(null, "some", "extPassword", expectedUser.getEmail(), true, "x", false, null, null, null, null);
-        when(userRepository.findByEmail(expectedUser.getEmail())).thenReturn(emlUser);
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(expectedUser));
 
         Exception exception = assertThrows(UserDetailsFoundException.class, () -> {
             userService.save(expectedUser);
@@ -83,7 +86,7 @@ public class UserServiceTest {
     @Test
     public void findUserByUsername_with_given_correct_username_OK() {
         String testUsername = expectedUser.getUsername();
-        when(userRepository.findByUsername(testUsername)).thenReturn(expectedUser);
+        when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(expectedUser));
         User actualUser = userService.findUserByUsername(testUsername).get();
         assertEquals(expectedUser.getUsername(), actualUser.getUsername());
     }
@@ -91,7 +94,7 @@ public class UserServiceTest {
     @Test
     public void findUserByEmail_with_given_correct_email_OK(){
         String testEmail = expectedUser.getEmail();
-        when(userRepository.findByEmail(testEmail)).thenReturn(expectedUser);
+        when(userRepository.findByEmail(testEmail)).thenReturn(Optional.of(expectedUser));
         User actualUser = userService.findUserByEmail(testEmail).get();
         assertEquals(expectedUser.getEmail(), actualUser.getEmail());
     }

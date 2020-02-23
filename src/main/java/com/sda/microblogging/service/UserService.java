@@ -33,11 +33,11 @@ public class UserService {
     }
 
     public Optional<User> findUserByUsername(@NotBlank String username) {
-        return Optional.of(userRepository.findByUsername(username));
+        return userRepository.findByUsername(username);
     }
 
     public Optional<User> findUserByEmail(@NotBlank String email) {
-        return Optional.of(userRepository.findByEmail(email));
+        return userRepository.findByEmail(email);
     }
 
     public Optional<User> findUserById(@NotBlank Integer userId) {
