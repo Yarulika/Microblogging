@@ -41,7 +41,7 @@ public class FollowerService {
         return followerRepository.findAllFollowersByUser(userId);
     }
 
-    public List<Follower> findAllFollowingByFollowerId(Integer followerId) {
+    public List<Follower> getAllFollowingByFollowerId(Integer followerId) {
         return followerRepository.findAllFollowingByFollower(followerId);
     }
 

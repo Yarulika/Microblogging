@@ -119,7 +119,7 @@ class FollowerServiceTest {
         Integer followerId = expectedFollowerDetail.getFollower().getUserId();
 
         when(followerRepository.findAllFollowingByFollower(anyInt())).thenReturn(Collections.singletonList(expectedFollowerDetail));
-        List<Follower> following = followerService.findAllFollowingByFollowerId(followerId);
+        List<Follower> following = followerService.getAllFollowingByFollowerId(followerId);
 
         assertEquals(following.size(), 1);
         assertThat(following).contains(expectedFollowerDetail);
