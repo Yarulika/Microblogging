@@ -85,6 +85,8 @@ class FollowerServiceTest {
     @Test
     public void followUser_should_return_saved_follower_and_followed_users() {
         when(followerRepository.save(any(Follower.class))).thenReturn(expectedFollowerDetail);
+        when(followerRepository.findFollowerByUserAndFollower(anyInt(), anyInt())).thenReturn(Optional.empty());
+
         Follower actualFollowerDetail = followerService.followUser(expectedFollowerDetail);
 
         assertEquals(expectedFollowerDetail.getFollower().getUserId(), actualFollowerDetail.getFollower().getUserId());
@@ -130,6 +132,8 @@ class FollowerServiceTest {
     public void unFollowUser_with_valid_userAndFollowerId_should_remove_following() {
         Integer followerId = followerUser.getUserId();
         Integer userId = user.getUserId();
+
+        when(followerRepository.findFollowerByUserAndFollower(userId, followerId)).thenReturn(Optional.of(expectedFollowerDetail));
 
         followerService.unFollowUser(userId, followerId);
         verify(followerRepository, times(1)).deleteByUserAndFollower(userId, followerId);
