@@ -58,23 +58,4 @@ public class User {
     @OneToMany(mappedBy = "id")
     private Set<Follower> followers;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return isPrivate() == user.isPrivate() &&
-                isBlocked() == user.isBlocked() &&
-                getUsername().equals(user.getUsername()) &&
-                getPassword().equals(user.getPassword()) &&
-                getEmail().equals(user.getEmail()) &&
-                Objects.equals(getAvatar(), user.getAvatar()) &&
-                Objects.equals(getCreationDate(), user.getCreationDate()) &&
-                Objects.equals(getRole(), user.getRole());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole());
-    }
 }
