@@ -1,14 +1,13 @@
 package com.sda.microblogging.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
 
 @Entity(name = "post_likes")
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class PostLike {
