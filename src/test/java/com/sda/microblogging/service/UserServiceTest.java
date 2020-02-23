@@ -3,6 +3,8 @@ package com.sda.microblogging.service;
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
+import com.sda.microblogging.exception.UserDetailsFoundException;
+import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,11 +14,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -54,6 +59,28 @@ public class UserServiceTest {
     }
 
     @Test
+    public void save_with_existing_username_returns_UserDetailsFoundException(){
+        User newUser = new User(null, expectedUser.getUsername(), "extPassword", "extEmail@mail.com", true, "x", false, null, null, null, null);
+        when(userRepository.findByUsername(expectedUser.getUsername())).thenReturn(newUser);
+
+        Exception exception = assertThrows(UserDetailsFoundException.class, () -> {
+            userService.save(expectedUser);
+        });
+        assertThat(exception.getMessage()).contains("Person with username", "already exists");
+    }
+
+    @Test
+    public void save_with_existing_email_returns_UserDetailsFoundException(){
+        User emlUser = new User(null, "some", "extPassword", expectedUser.getEmail(), true, "x", false, null, null, null, null);
+        when(userRepository.findByEmail(expectedUser.getEmail())).thenReturn(emlUser);
+
+        Exception exception = assertThrows(UserDetailsFoundException.class, () -> {
+            userService.save(expectedUser);
+        });
+        assertThat(exception.getMessage()).contains("Person with email", "already exists");
+    }
+
+    @Test
     public void findUserByUsername_with_given_correct_username_OK() {
         String testUsername = expectedUser.getUsername();
         when(userRepository.findByUsername(testUsername)).thenReturn(expectedUser);
@@ -62,10 +89,62 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getById_with_given_correct_id_OK() throws Exception{
+    public void findUserByEmail_with_given_correct_email_OK(){
+        String testEmail = expectedUser.getEmail();
+        when(userRepository.findByEmail(testEmail)).thenReturn(expectedUser);
+        User actualUser = userService.findUserByEmail(testEmail).get();
+        assertEquals(expectedUser.getEmail(), actualUser.getEmail());
+    }
+
+    @Test
+    public void findUserById_with_given_correct_id_OK() throws Exception{
         int testId = expectedUser.getUserId();
         when(userRepository.findById(testId)).thenReturn(Optional.of(expectedUser));
-        User actualUser = userService.getById(testId).orElseThrow(Exception::new);
+        User actualUser = userService.findUserById(testId).orElseThrow(Exception::new);
         assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
+    public void update_returns_updated_user_OK(){
+        int savedId = expectedUser.getUserId();
+        // Test Data for updatedUser
+        Role role = new Role(2, RoleTitle.USER);
+        User userExtra1 = new User(10, "extUsername", "extPassword", "extEmail@mail.com", true, "x", false, null, null, null, null);
+        User userExtra2 = new User(20, "xtUsername", "xtPassword", "xtEmail@mail.com", false, "xx", false, null, null, null, null);
+        HashSet<User> blockedUsersSet = new HashSet<>();
+        blockedUsersSet.add(userExtra1);
+        blockedUsersSet.add(userExtra2);
+        // TODO add set of Followers
+
+        User updatedUser = new User();
+        updatedUser.setUserId(savedId);
+        updatedUser.setUsername("updName");
+        updatedUser.setPassword("updPassword");
+        updatedUser.setEmail("updName@mail.com");
+        updatedUser.setPrivate(true);
+        updatedUser.setAvatar("updAvatar");
+        updatedUser.setBlocked(true);
+        updatedUser.setCreationDate(Date.valueOf("2010-01-01"));
+        updatedUser.setRole(role);
+        updatedUser.setBlockedUsers(blockedUsersSet);
+        updatedUser.setFollowers(null);
+
+        when(userRepository.findById(savedId)).thenReturn(Optional.of(expectedUser));
+        when(userRepository.save(any(User.class))).thenReturn(updatedUser);
+        User actualUser = userService.update(updatedUser);
+        assertEquals(updatedUser, actualUser);
+    }
+
+    @Test
+    public void update_given_not_existing_user_returns_UserNotFoundException(){
+        User newUser = new User(100, "extUsername", "extPassword", "extEmail@mail.com", true, "x", false, null, null, null, null);
+
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.update(newUser);
+        });
+
+        String expectedMessage = "Given User was not found";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 }
