@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 
-
 @ExtendWith(MockitoExtension.class)
 //@RunWith(MockitoJUnitRunner.class) // TODO Ask ahmad
 class FollowerServiceTest {

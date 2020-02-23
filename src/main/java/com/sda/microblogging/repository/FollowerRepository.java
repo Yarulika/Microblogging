@@ -18,3 +18,4 @@ public interface FollowerRepository extends JpaRepository<Follower, Integer> {
 
     void deleteByUserAndFollower(Integer userId, Integer followerId);
 }
+

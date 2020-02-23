@@ -13,6 +13,7 @@ import java.sql.Date;
 @Setter
 public class CommentLike {
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

@@ -1,27 +1,27 @@
-ALTER TABLE users CHANGE `privacy` `is_private` int;
+alter table users CHANGE `privacy` `is_private` int;
 
-ALTER TABLE users CHANGE `account_status` `is_blocked` int;
+alter table users CHANGE `account_status` `is_blocked` int;
 
-ALTER TABLE users CHANGE `user_role` `user_role_id` int;
+alter table users CHANGE `user_role` `user_role_id` int;
 
-ALTER TABLE users CHANGE `username` `username` VARCHAR(45);
+alter table users CHANGE `username` `username` VARCHAR(45);
 
-ALTER TABLE user_role CHANGE `name` `title` varchar(20);
+alter table user_role CHANGE `name` `title` varchar(20);
 
-RENAME TABLE `user_role` TO `user_roles`;
+rename TABLE `user_role` to `user_roles`;
 
-ALTER TABLE followers add column id int PRIMARY KEY;
+alter table followers add column id int PRIMARY KEY auto_increment;
 
-ALTER TABLE followers CHANGE following_user_id follower_user_id int;
+alter table followers CHANGE following_user_id follower_user_id int;
 
-ALTER TABLE comments ADD COLUMN content varchar(160);
+alter table comments add COLUMN content varchar(160);
 
-ALTER TABLE comment_likes CHANGE `creation_date` `liked_date` DATETIME;
+alter table comment_likes CHANGE `creation_date` `liked_date` DATETIME;
 
-ALTER TABLE post_likes CHANGE `creation_date` `liked_date` DATETIME;
+alter table post_likes CHANGE `creation_date` `liked_date` DATETIME;
 
-ALTER TABLE posts CHANGE contents content  varchar(160);
+alter table posts CHANGE contents content  varchar(160);
 
-ALTER TABLE comment_likes ADD COLUMN id int primary key  auto_increment;
+alter table comment_likes add COLUMN id int primary key  auto_increment;
 
-ALTER TABLE post_likes ADD COLUMN id int primary key  auto_increment;
+alter table post_likes add COLUMN id int primary key  auto_increment;
