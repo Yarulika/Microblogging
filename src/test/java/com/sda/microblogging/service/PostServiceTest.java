@@ -11,11 +11,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.swing.text.html.Option;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,6 +31,7 @@ public class PostServiceTest {
     PostRepository postRepository;
     @InjectMocks
     PostService postService;
+
     private static List<Post> posts;
 
     @BeforeClass
@@ -35,15 +42,16 @@ public class PostServiceTest {
 
         posts = new ArrayList<>();
         Post post = new Post();
-        post.setId(1);
+        post.setId(10);
         post.setContent("test");
         post.setCreationDate(Date.valueOf("2020-01-01"));
         post.setOwner(user);
 
         Post post1 = new Post();
-        post1.setId(1);
+        post1.setId(2);
+        post1.setOriginalPost(post);
         post1.setContent("test22");
-        post1.setCreationDate(Date.valueOf("2020-01-01"));
+        post1.setCreationDate(Date.valueOf("2020-01-02"));
         post1.setOwner(user);
 
         posts.add(post);
@@ -65,7 +73,9 @@ public class PostServiceTest {
         when(postRepository.findByOrderByCreationDate()).thenReturn(posts);
         List<Post> actualPosts = postService.findByOrderByCreationDate();
 
-        assertEquals(2,actualPosts.size());
+        Collections.sort(posts,Collections.reverseOrder());
+
+        assertEquals(posts.get(0).getCreationDate(),actualPosts.get(0).getCreationDate());
         verify(postRepository,times(1)).findByOrderByCreationDate();
     }
 
@@ -95,5 +105,14 @@ public class PostServiceTest {
 
         assertEquals(1,numberOfSharedPosts);
         verify(postRepository,times(1)).findNumberOfSharesOfPost(1);
+    }
+
+    @Test
+    public void findPostById_return_post(){
+        when(postRepository.findById(any())).thenReturn(Optional.of(posts.get(1)));
+
+        Optional<Post> actualPost = postService.findPostById(5);
+
+        assertEquals(actualPost.get(),posts.get(1));
     }
 }

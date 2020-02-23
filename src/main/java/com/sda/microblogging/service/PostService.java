@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -35,5 +36,21 @@ public class PostService {
 
     public int findNumberOfSharesOfPost(int postId){
         return postRepository.findNumberOfSharesOfPost(postId);
+    }
+
+    public Optional<Post> findPostById(int postId) {
+        return postRepository.findById(postId);
+    }
+
+    public Post sharePost(Post post) {
+
+        requireNonNull(post.getOriginalPost().getId());//should have the original post id
+        Optional<Post> originalPost =  postRepository.findById(post.getOriginalPost().getId());
+
+        if (originalPost.isPresent()){
+            return postRepository.save(post);
+        }else{
+            return post;
+        }
     }
 }
