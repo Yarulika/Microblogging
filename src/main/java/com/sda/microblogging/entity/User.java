@@ -58,6 +58,7 @@ public class User {
     @OneToMany(mappedBy = "id")
     private Set<Follower> followers;
 
+<<<<<<< HEAD
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,4 +81,6 @@ public class User {
     public int hashCode() {
         return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers(), getFollowers());
     }
+=======
+>>>>>>> added test for following, unfollowing, getAllFollowers, getAllFollowings
 }
