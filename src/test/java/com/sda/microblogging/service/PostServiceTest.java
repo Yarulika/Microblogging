@@ -11,17 +11,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.swing.text.html.Option;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,7 +28,6 @@ public class PostServiceTest {
     PostRepository postRepository;
     @InjectMocks
     PostService postService;
-
     private static List<Post> posts;
 
     @BeforeClass
@@ -72,7 +68,6 @@ public class PostServiceTest {
 
         when(postRepository.findByOrderByCreationDate()).thenReturn(posts);
         List<Post> actualPosts = postService.findByOrderByCreationDate();
-
         Collections.sort(posts,Collections.reverseOrder());
 
         assertEquals(posts.get(0).getCreationDate(),actualPosts.get(0).getCreationDate());
