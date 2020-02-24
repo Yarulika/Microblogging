@@ -8,6 +8,6 @@ public class MicrobloggingApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MicrobloggingApplication.class, args);
-	}
+	} 
 
 }

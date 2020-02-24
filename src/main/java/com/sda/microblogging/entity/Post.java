@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
+public class Post implements Comparable<Post>{
 
     @Id
     @Column(name = "post_id")
@@ -48,4 +48,8 @@ public class Post {
     )
     private Set<Tag> tags;
 
+    @Override
+    public int compareTo(Post post) {
+        return getCreationDate().compareTo(post.creationDate);
+    }
 }
