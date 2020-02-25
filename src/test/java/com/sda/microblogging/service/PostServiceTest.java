@@ -64,6 +64,7 @@ public class PostServiceTest {
         assertEquals(2,actualPosts.size());
         verify(postRepository,times(1)).findAll();
     }
+
     @Test
     public void get_all_posts_sorted_by_date(){
 
@@ -81,7 +82,7 @@ public class PostServiceTest {
 
         List<Post> postList = postService.findPostsByOwner(1);
 
-        assertEquals("muhamet",postList.get(1).getOwner().getUsername());
+        assertEquals(posts.get(1).getOwner().getUsername(),postList.get(1).getOwner().getUsername());
     }
 
     @Test
@@ -97,12 +98,12 @@ public class PostServiceTest {
     @Test
     public void getSharedPosts_return_number_of_sharded_post() {
 
-        when(postRepository.findNumberOfSharesOfPost(Mockito.anyInt())).thenReturn(1);
+        when(postRepository.countByOriginalPostId(Mockito.anyInt())).thenReturn(1);
 
         int numberOfSharedPosts = postService.findNumberOfSharesOfPost(1);
 
         assertEquals(1,numberOfSharedPosts);
-        verify(postRepository,times(1)).findNumberOfSharesOfPost(1);
+        verify(postRepository,times(1)).countByOriginalPostId(1);
     }
 
     @Test

@@ -43,7 +43,7 @@ public class PostService {
     }
 
     public int findNumberOfSharesOfPost(@NotBlank @Min(1) int postId){
-        return postRepository.findNumberOfSharesOfPost(postId);
+        return postRepository.countByOriginalPostId(postId);
     }
 
     public Optional<Post> findPostById(@NotBlank @Min(1) int postId){ return postRepository.findById(postId);}
