@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,6 +53,14 @@ public class UserService {
         }
     }
 
-    // TODO find All Active Users
+    public List<User> findAllActiveUsers(){
+        return userRepository.findAllByIsBlocked(false);
+    }
 
+    public String saveImage(byte[] imageData) {
+        String imgUrl = new String();
+        // TODO hardcoded at the moment: will implement later saving img on hard disc or some media server
+        imgUrl = "//https://cdn.pixabay.com/photo/2018/05/31/15/06/not-hear-3444212__340.jpg";
+        return imgUrl;
+    }
 }
