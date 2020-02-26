@@ -11,7 +11,5 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Post> findPostsByOwner(int userId);
     List<Post> findByOrderByCreationDate();
-
-    @Query("select count(p.original_post_id) as numberOfShares from posts p where p.original_post_id = ?1 group by(p.original_post_id);")
-    Integer findNumberOfSharesOfPost(int postId);
+    int countByOriginalPostId(int postId);
 }

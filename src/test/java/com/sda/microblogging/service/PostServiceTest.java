@@ -5,6 +5,7 @@ import com.sda.microblogging.entity.User;
 import com.sda.microblogging.repository.PostRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -63,6 +64,7 @@ public class PostServiceTest {
         assertEquals(2,actualPosts.size());
         verify(postRepository,times(1)).findAll();
     }
+
     @Test
     public void get_all_posts_sorted_by_date(){
 
@@ -75,31 +77,33 @@ public class PostServiceTest {
     }
 
     @Test
-    public void get_posts_by_userId() {
+    public void get_posts_by_userId_return_username() {
         when(postRepository.findPostsByOwner(1)).thenReturn(posts);
 
         List<Post> postList = postService.findPostsByOwner(1);
 
-        assertEquals("muhamet",postList.get(1).getOwner().getUsername());
+        assertEquals(posts.get(1).getOwner().getUsername(),postList.get(1).getOwner().getUsername());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void post_without_content_check() {
         Post post = new Post();
         post.setId(1);
 
-        postService.save(post);
+        Exception exception = Assertions.assertThrows(NullPointerException.class,()->{
+            postService.save(post);
+        });
     }
 
     @Test
     public void getSharedPosts_return_number_of_sharded_post() {
 
-        when(postRepository.findNumberOfSharesOfPost(Mockito.anyInt())).thenReturn(1);
+        when(postRepository.countByOriginalPostId(Mockito.anyInt())).thenReturn(1);
 
         int numberOfSharedPosts = postService.findNumberOfSharesOfPost(1);
 
         assertEquals(1,numberOfSharedPosts);
-        verify(postRepository,times(1)).findNumberOfSharesOfPost(1);
+        verify(postRepository,times(1)).countByOriginalPostId(1);
     }
 
     @Test
@@ -107,7 +111,6 @@ public class PostServiceTest {
         when(postRepository.findById(any())).thenReturn(Optional.of(posts.get(1)));
 
         Optional<Post> actualPost = postService.findPostById(5);
-
-        assertEquals(actualPost.get(),posts.get(1));
+        assertEquals(posts.get(1),actualPost.get());
     }
 }
