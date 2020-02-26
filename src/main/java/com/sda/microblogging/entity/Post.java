@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 import java.sql.Date;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class Post implements Comparable<Post>{
     private Integer id;
 
     @Column
-    @Max(160)
+    @Size(min = 1, max = 160)
     private String content;
 
     @Column(name = "is_edited")
