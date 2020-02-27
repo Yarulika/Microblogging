@@ -1,19 +1,14 @@
 package com.sda.microblogging.controller;
 
 import com.sda.microblogging.entity.User;
-import com.sda.microblogging.exception.IncorrectUserDetailsException;
-import com.sda.microblogging.exception.UserDetailsFoundException;
-import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.sql.ResultSet;
 import java.util.Optional;
 
 @RestController
@@ -57,22 +52,11 @@ public class UserController {
 
     @PostMapping(path = "/user")
     @ResponseBody
-    public ResponseEntity<?> saveNew(@Valid @RequestBody User user, BindingResult bindingResult) {
-        // TODO :(((
-        if (bindingResult.hasErrors()) {
-            throw new IncorrectUserDetailsException(bindingResult);
-        } else {
-            try {
-                userService.save(user);
-                return new ResponseEntity<>((user), HttpStatus.CREATED);
-            } catch (UserDetailsFoundException ex) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-            }
-        }
+    public ResponseEntity<User> saveNew(@Valid @RequestBody User user) {
+        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
 }
-
 
 //USER:
 //        TODO "/{username}/followers" => getAllFollowers

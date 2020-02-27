@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
+import com.sda.microblogging.service.FollowerService;
 import com.sda.microblogging.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,6 +33,9 @@ public class UserControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private FollowerService followerService;
 
     @Test
     public void getAllActiveUsers_returns_collection_of_active_users() throws Exception {
@@ -53,6 +56,18 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.*").isArray())
                 .andExpect(jsonPath("$.*", hasSize(2)))
                 .andReturn();
+    }
+
+    @Test
+    public void getAllFollowingUsers_returns_collection(){
+        User user0 = new User(null, "username0", "password0", "email0@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null, null);
+        User user1 = new User(null, "username1", "password1", "email1mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null, null);
+        User user2 = new User(null, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null, null);
+        User[] users = new User[2];
+        users[0] = user0;
+        users[1] = user1;
+//TODO
+
     }
 
     @Test
@@ -101,20 +116,18 @@ public class UserControllerTest {
     @Test
     public void saveNew_user_returns_CREATED() throws Exception {
         User user = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null, null);
-
         when(userService.save(user)).thenReturn(user);
         ResultActions result = mockMvc
                 .perform(
                         post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.valueOf(user))
                         .content(asJsonString(user))
-                        .accept(MediaType.APPLICATION_JSON))
+                        )
                 .andDo(print());
 
         result
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("username").value(user.getUsername()))
                 .andReturn();
     }
 
@@ -131,7 +144,7 @@ public class UserControllerTest {
                 .andDo(print());
 
         result
-                .andExpect(status().isNotAcceptable())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
