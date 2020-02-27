@@ -1,5 +1,8 @@
 package com.sda.microblogging.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sda.microblogging.common.RoleTitle;
+import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -10,11 +13,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.sql.Date;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,24 +35,114 @@ public class UserControllerTest {
     private UserService userService;
 
     @Test
-    void getUserByValidUsername_returnsUser_OK() throws Exception {
-        //given
+    public void getAllActiveUsers_returns_collection_of_active_users() throws Exception {
+        User user0 = new User(null, "username1", "password1", "email1@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(1, RoleTitle.ADMIN), null, null);
+        User user1 = new User(null, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(1, RoleTitle.ADMIN), null, null);
+        User[] users = new User[2];
+        users[0] = user0;
+        users[1] = user1;
+
+        when(userService.findAllActiveUsers()).thenReturn(Arrays.asList(users));
+        ResultActions result = mockMvc
+                .perform(
+                        get("/user/allActive"))
+                .andDo(print());
+        result
+                .andExpect(status().isFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.*").isArray())
+                .andExpect(jsonPath("$.*", hasSize(2)))
+                .andReturn();
+    }
+
+    @Test
+    public void getAllActiveUsers_returns_empty_collection_if_none_present() throws Exception {
+        User[] users = new User[0];
+        when(userService.findAllActiveUsers()).thenReturn(Arrays.asList(users));
+        ResultActions result = mockMvc
+                .perform(
+                        get("/user/allActive"))
+                .andDo(print());
+        result
+                .andExpect(status().isFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.*", hasSize(0)))
+                .andReturn();
+    }
+
+    @Test
+    public void getUserByValidUsername_returnsUser() throws Exception {
         String username = "usernameX";
         User user = new User(null, username, "password", "email", true, null, false, null, null, null, null);
         when(userService.findUserByUsername(username)).thenReturn(Optional.of(user));
-
-        // when
         ResultActions result = mockMvc
                 .perform(
-                        get("/users/usernameX")
+                        get("/user/usernameX")
                 ).andDo(print());
-        //then
         result
-                .andExpect(status().isOk())
+                .andExpect(status().isFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("username").value(username))
                 .andExpect(jsonPath("$.*").isArray())
                 .andExpect(jsonPath("$.*", hasSize(11)))
                 .andReturn();
+    }
+
+    @Test
+    public void getUserByUsername_if_none_returns_NOT_FOUND() throws Exception {
+        ResultActions result = mockMvc
+                .perform(
+                        get("/user/any")
+                ).andDo(print());
+        result
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void saveNew_user_returns_CREATED() throws Exception {
+        User user = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null, null);
+
+        when(userService.save(user)).thenReturn(user);
+        ResultActions result = mockMvc
+                .perform(
+                        post("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(user))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        result
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("username").value(user.getUsername()))
+                .andReturn();
+    }
+
+    @Test
+    public void saveNewUser_with_insufficient_details_returns_NotAcceptable_status() throws Exception {
+        User user = new User(22, "username", null, null, false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null, null);
+
+        ResultActions result = mockMvc
+                .perform(
+                        post("/user")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(asJsonString(user))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        result
+                .andExpect(status().isNotAcceptable())
+                .andReturn();
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            final String jsonContent = mapper.writeValueAsString(obj);
+            System.out.println(jsonContent);
+            return jsonContent;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
