@@ -2,6 +2,7 @@ package com.sda.microblogging.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
+import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.service.FollowerService;
@@ -39,8 +40,8 @@ public class UserControllerTest {
 
     @Test
     public void getAllActiveUsers_returns_collection_of_active_users() throws Exception {
-        User user0 = new User(null, "username1", "password1", "email1@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(1, RoleTitle.ADMIN), null, null);
-        User user1 = new User(null, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(1, RoleTitle.ADMIN), null, null);
+        User user0 = new User(null, "username1", "password1", "email1@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(1, RoleTitle.ADMIN), null);
+        User user1 = new User(null, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(1, RoleTitle.ADMIN), null);
         User[] users = new User[2];
         users[0] = user0;
         users[1] = user1;
@@ -59,15 +60,30 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getAllFollowingUsers_returns_collection(){
-        User user0 = new User(null, "username0", "password0", "email0@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null, null);
-        User user1 = new User(null, "username1", "password1", "email1mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null, null);
-        User user2 = new User(null, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null, null);
-        User[] users = new User[2];
-        users[0] = user0;
-        users[1] = user1;
-//TODO
+    public void getAllFollowingUsers_returns_collection() throws Exception{
+        User user0 = new User(1, "username0", "password0", "email0@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        User user1 = new User(2, "username1", "password1", "email1mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null);
+        User user2 = new User(3, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null);
+        Follower follower0 = new Follower(1, user0, user1, Date.valueOf("2020-01-01"));
+        Follower follower1 = new Follower(2, user0, user2, Date.valueOf("2020-01-01"));
+        Follower[] followers = new Follower[2];
+        followers[0] = follower0;
+        followers[1] = follower1;
+        String username = user0.getUsername();
 
+        when(userService.findUserByUsername(user0.getUsername())).thenReturn(Optional.of(user0));
+        when(followerService.getAllFollowingByFollowerId(user0.getUserId())).thenReturn(Arrays.asList(followers));
+
+        ResultActions result = mockMvc
+                .perform(
+                        get("/user/username0/followings"))
+                .andDo(print());
+        result
+                .andExpect(status().isFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.*").isArray())
+                .andExpect(jsonPath("$.*", hasSize(2)))
+                .andReturn();
     }
 
     @Test
@@ -88,7 +104,7 @@ public class UserControllerTest {
     @Test
     public void getUserByValidUsername_returnsUser() throws Exception {
         String username = "usernameX";
-        User user = new User(null, username, "password", "email", true, null, false, null, null, null, null);
+        User user = new User(null, username, "password", "email", true, null, false, null, null, null);
         when(userService.findUserByUsername(username)).thenReturn(Optional.of(user));
         ResultActions result = mockMvc
                 .perform(
@@ -99,7 +115,7 @@ public class UserControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("username").value(username))
                 .andExpect(jsonPath("$.*").isArray())
-                .andExpect(jsonPath("$.*", hasSize(11)))
+                .andExpect(jsonPath("$.*", hasSize(10)))
                 .andReturn();
     }
 
@@ -115,7 +131,7 @@ public class UserControllerTest {
 
     @Test
     public void saveNew_user_returns_CREATED() throws Exception {
-        User user = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null, null);
+        User user = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
         when(userService.save(user)).thenReturn(user);
         ResultActions result = mockMvc
                 .perform(
@@ -133,7 +149,7 @@ public class UserControllerTest {
 
     @Test
     public void saveNewUser_with_insufficient_details_returns_NotAcceptable_status() throws Exception {
-        User user = new User(22, "username", null, null, false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null, null);
+        User user = new User(22, "username", null, null, false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
 
         ResultActions result = mockMvc
                 .perform(

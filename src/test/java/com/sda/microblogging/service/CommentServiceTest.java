@@ -42,7 +42,7 @@ public class CommentServiceTest {
     @BeforeEach
     public void init(){
         comment = new Comment();
-        User owningUser = new User(33, "ownerUsername", "ownerPassword", "owner@mail.com", true, "?", false, null, null, null, null);
+        User owningUser = new User(33, "ownerUsername", "ownerPassword", "owner@mail.com", true, "?", false, null, null, null);
         post = new Post(77, "post content", false, owningUser, Date.valueOf("2020-01-01"), null, null);
 
         comment.setContent("comment content");

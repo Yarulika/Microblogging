@@ -4,6 +4,7 @@ import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.repository.FollowerRepository;
+import com.sda.microblogging.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,13 +32,14 @@ class FollowerServiceTest {
     @Mock
     private FollowerRepository followerRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private FollowerService followerService;
 
-
     private User followerUser;
     private User user;
-
     private Follower expectedFollowerDetail;
 
     @BeforeEach
@@ -103,9 +105,9 @@ class FollowerServiceTest {
 
     @Test
     public void getAllFollowersByUserId_with_valid_id_should_return_list_of_followers() {
-        Integer userId = expectedFollowerDetail.getUser().getUserId();
-
-        when(followerRepository.findAllFollowersByUser(anyInt())).thenReturn(Collections.singletonList(expectedFollowerDetail));
+        Integer userId = user.getUserId();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(expectedFollowerDetail.getUser()));
+        when(followerRepository.findAllFollowersByUser(any(User.class))).thenReturn(Collections.singletonList(expectedFollowerDetail));
         List<Follower> followers = followerService.getAllFollowersByUserId(userId);
 
         assertEquals(followers.size(), 1);
@@ -116,12 +118,12 @@ class FollowerServiceTest {
     public void getAllFollowingByFollowerId_with_valid_id_should_return_list_of_following() {
         Integer followerId = expectedFollowerDetail.getFollower().getUserId();
 
-        when(followerRepository.findAllFollowingByFollower(anyInt())).thenReturn(Collections.singletonList(expectedFollowerDetail));
+        when(userRepository.findById(followerId)).thenReturn(Optional.of(expectedFollowerDetail.getUser()));
+        when(followerRepository.findAllFollowingByFollower(any(User.class))).thenReturn(Collections.singletonList(expectedFollowerDetail));
         List<Follower> following = followerService.getAllFollowingByFollowerId(followerId);
 
         assertEquals(following.size(), 1);
         assertThat(following).contains(expectedFollowerDetail);
-
     }
 
     @Test

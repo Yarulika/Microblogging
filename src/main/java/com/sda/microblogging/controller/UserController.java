@@ -1,6 +1,8 @@
 package com.sda.microblogging.controller;
 
+import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.User;
+import com.sda.microblogging.service.FollowerService;
 import com.sda.microblogging.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
@@ -15,10 +18,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final FollowerService followerService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FollowerService followerService) {
         this.userService = userService;
+        this.followerService = followerService;
     }
 
     @GetMapping(path = "/user/allActive")
@@ -26,6 +31,22 @@ public class UserController {
     @ResponseBody
     public Iterable<User> findAllActiveUsers() {
         return userService.findAllActiveUsers();
+    }
+
+    @GetMapping(path = "/user/{username}/followers")
+    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseBody
+    public Iterable<Follower> findAllFollowersByUsername(@PathVariable @NotBlank String username){
+        int id = userService.findUserByUsername(username).get().getUserId();
+        return followerService.getAllFollowersByUserId(id);
+    }
+
+    @GetMapping(path = "/user/{username}/followings")
+    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseBody
+    public Iterable<Follower> findAllFollowingByFollowerUsername(@PathVariable @NotBlank String username){
+        int id = userService.findUserByUsername(username).get().getUserId();
+        return followerService.getAllFollowingByFollowerId(id);
     }
 
     @GetMapping(path = "/user/{username}")
@@ -57,9 +78,3 @@ public class UserController {
     }
 
 }
-
-//USER:
-//        TODO "/{username}/followers" => getAllFollowers
-//        TODO "/{username}/following" => getAllFollowings
-//        "/login" => POST login
-//        "/password" PUT

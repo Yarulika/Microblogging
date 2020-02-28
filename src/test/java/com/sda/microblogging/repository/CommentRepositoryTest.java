@@ -39,7 +39,7 @@ public class CommentRepositoryTest {
         Comment childComment1;
         Comment childComment2;
 
-        owningUser = new User(null, "ownerUsername", "ownerPassword", "owner@mail.com", true, "?", false, Date.valueOf("2020-01-01"), role, null, null);
+        owningUser = new User(null, "ownerUsername", "ownerPassword", "owner@mail.com", true, "?", false, Date.valueOf("2020-01-01"), role, null);
         owningUser = userRepository.save(owningUser);
 
         post = new Post(null, "post content", false, owningUser, Date.valueOf("2020-01-01"), null, null);

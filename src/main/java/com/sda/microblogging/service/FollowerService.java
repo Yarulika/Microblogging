@@ -1,7 +1,10 @@
 package com.sda.microblogging.service;
 
 import com.sda.microblogging.entity.Follower;
+import com.sda.microblogging.entity.User;
+import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.repository.FollowerRepository;
+import com.sda.microblogging.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +16,14 @@ import java.util.Optional;
 @Service
 public class FollowerService {
 
+    private FollowerRepository followerRepository;
+    private UserRepository userRepository;
+
     @Autowired
-    FollowerRepository followerRepository;
+    public FollowerService(FollowerRepository followerRepository, UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.followerRepository = followerRepository;
+    }
 
     public Follower followUser(@Valid @NotNull Follower newFollower) {
         Integer userId = newFollower.getUser().getUserId();
@@ -36,11 +45,22 @@ public class FollowerService {
     }
 
     public List<Follower> getAllFollowersByUserId(Integer userId) {
-        return followerRepository.findAllFollowersByUser(userId);
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            return followerRepository.findAllFollowersByUser(user.get());
+        } else {
+            throw new UserNotFoundException();
+        }
     }
 
     public List<Follower> getAllFollowingByFollowerId(Integer followerId) {
-        return followerRepository.findAllFollowingByFollower(followerId);
+        Optional<User> follower = userRepository.findById(followerId);
+        if (follower.isPresent()){
+            return followerRepository.findAllFollowingByFollower(follower.get());
+        }
+        else {
+            throw new UserNotFoundException();
+        }
     }
 
     public Optional<Follower> getFollowerByUserIdAndFollowerId(Integer userId, Integer followerId) {
