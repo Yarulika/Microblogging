@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.sql.Date;
 import java.util.Objects;
 import java.util.Set;
@@ -22,24 +24,32 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
+    @NotNull
+    @Size(min = 1, max = 45)
     @Column
     private String username;
 
+    @NotNull
+    @Size(min = 1, max = 45)
     @Column
     private String password;
 
+    @NotNull
+    @Size(min = 1, max = 45)
     @Column
     private String email;
 
     @Column(name = "is_private")
     private boolean isPrivate;
 
+    @NotNull
     @Column
     private String avatar;
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    @NotNull
     @Column(name = "creation_date")
     private Date creationDate;
 
