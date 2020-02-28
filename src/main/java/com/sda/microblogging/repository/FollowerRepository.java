@@ -1,6 +1,7 @@
 package com.sda.microblogging.repository;
 
 import com.sda.microblogging.entity.Follower;
+import com.sda.microblogging.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,12 +10,13 @@ import java.util.Optional;
 
 @Repository
 public interface FollowerRepository extends JpaRepository<Follower, Integer> {
-    List<Follower> findAllFollowersByUser(Integer userId);
+    List<Follower> findAllFollowersByUser(User user);
 
-    List<Follower> findAllFollowingByFollower(Integer followerId);
+    List<Follower> findAllFollowingByFollower(User follower);
 
+    // TODO replace with Optional<Follower> findFollowerByUserAndFollower(User user, User follower);
     Optional<Follower> findFollowerByUserAndFollower(Integer userId, Integer followerId);
 
+    // TODO replace with void deleteByUserAndFollower(User user, User follower);
     void deleteByUserAndFollower(Integer userId, Integer followerId);
 }
-

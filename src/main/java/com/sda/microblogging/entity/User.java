@@ -65,8 +65,8 @@ public class User {
     )
     private Set<User> blockedUsers;
 
-    @OneToMany(mappedBy = "id")
-    private Set<Follower> followers;
+//    @OneToMany(mappedBy = "id")
+//    private Set<Follower> followers;
 
     @Override
     public boolean equals(Object o) {
@@ -82,12 +82,12 @@ public class User {
                 Objects.equals(getAvatar(), user.getAvatar()) &&
                 Objects.equals(getCreationDate(), user.getCreationDate()) &&
                 Objects.equals(getRole(), user.getRole()) &&
-                Objects.equals(getBlockedUsers(), user.getBlockedUsers()) &&
-                Objects.equals(getFollowers(), user.getFollowers());
+                Objects.equals(getBlockedUsers(), user.getBlockedUsers()
+                );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers(), getFollowers());
+        return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers());
     }
 }

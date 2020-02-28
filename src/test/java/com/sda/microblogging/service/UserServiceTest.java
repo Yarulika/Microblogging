@@ -51,7 +51,6 @@ public class UserServiceTest {
         Role role = new Role(1, RoleTitle.ADMIN);
         expectedUser.setRole(role);
         expectedUser.setBlockedUsers(null);
-        expectedUser.setFollowers(null);
     }
 
     @Test
@@ -115,10 +114,10 @@ public class UserServiceTest {
         User updatedUser = new User();
 
         Role role = new Role(2, RoleTitle.USER);
-        User userExtra1 = new User(10, "username1", "password1", "email1@mail.com", true, "1", false, null, null, null, null);
-        User userExtra2 = new User(20, "username2", "password2", "email2@mail.com", false, "2", false, null, null, null, null);
-        User userExtra3 = new User(30, "username3", "password3", "email3@mail.com", true, "3", false, null, null, null, null);
-        User userExtra4 = new User(40, "username4", "password4", "email4@mail.com", false, "4", false, null, null, null, null);
+        User userExtra1 = new User(10, "username1", "password1", "email1@mail.com", true, "1", false, null, null, null);
+        User userExtra2 = new User(20, "username2", "password2", "email2@mail.com", false, "2", false, null, null, null);
+        User userExtra3 = new User(30, "username3", "password3", "email3@mail.com", true, "3", false, null, null, null);
+        User userExtra4 = new User(40, "username4", "password4", "email4@mail.com", false, "4", false, null, null, null);
         HashSet<User> blockedUsersSet = new HashSet<>();
         blockedUsersSet.add(userExtra1);
         blockedUsersSet.add(userExtra2);
@@ -139,7 +138,6 @@ public class UserServiceTest {
         updatedUser.setCreationDate(Date.valueOf("2010-01-01"));
         updatedUser.setRole(role);
         updatedUser.setBlockedUsers(blockedUsersSet);
-        updatedUser.setFollowers(followersUsersSet);
 
         when(userRepository.findById(savedId)).thenReturn(Optional.of(expectedUser));
         when(userRepository.save(any(User.class))).thenReturn(updatedUser);
@@ -149,7 +147,7 @@ public class UserServiceTest {
 
     @Test
     public void update_given_not_existing_user_returns_UserNotFoundException(){
-        User newUser = new User(100, "extUsername", "extPassword", "extEmail@mail.com", true, "x", false, null, null, null, null);
+        User newUser = new User(100, "extUsername", "extPassword", "extEmail@mail.com", true, "x", false, null, null, null);
 
         Exception exception = assertThrows(UserNotFoundException.class, () -> {
             userService.update(newUser);
@@ -162,8 +160,8 @@ public class UserServiceTest {
 
     @Test
     public void findAllActiveUsers_returns_users(){
-        User userExtra1 = new User(null, "username1", "password1", "email1@mail.com", true, "1", true, Date.valueOf("2015-01-01"), null, null, null);
-        User userExtra2 = new User(null, "username2", "password2", "email2@mail.com", true, "2", true, Date.valueOf("2015-01-01"), null, null, null);
+        User userExtra1 = new User(null, "username1", "password1", "email1@mail.com", true, "1", true, Date.valueOf("2015-01-01"), null, null);
+        User userExtra2 = new User(null, "username2", "password2", "email2@mail.com", true, "2", true, Date.valueOf("2015-01-01"), null, null);
         List<User> testUsers = new ArrayList<>();
         testUsers.add(userExtra1);
         testUsers.add(userExtra2);

@@ -36,7 +36,6 @@ public class UserRepositoryTest {
         Role role = new Role(1, RoleTitle.ADMIN);
         expectedUser.setRole(role);
         expectedUser.setBlockedUsers(null);
-        expectedUser.setFollowers(null);
     }
 
     @Test
@@ -66,8 +65,8 @@ public class UserRepositoryTest {
     @Test
     @Order(4)
     public void findAllNotBlocked_returns_active_users(){
-        User userExtra1 = new User(null, "username1", "password1", "email1@mail.com", true, "1", true, Date.valueOf("2015-01-01"), null, null, null);
-        User userExtra2 = new User(null, "username2", "password2", "email2@mail.com", true, "2", true, Date.valueOf("2015-01-01"), null, null, null);
+        User userExtra1 = new User(null, "username1", "password1", "email1@mail.com", true, "1", true, Date.valueOf("2015-01-01"), null, null);
+        User userExtra2 = new User(null, "username2", "password2", "email2@mail.com", true, "2", true, Date.valueOf("2015-01-01"), null, null);
         userRepository.save(userExtra1);
         userRepository.save(userExtra2);
 
