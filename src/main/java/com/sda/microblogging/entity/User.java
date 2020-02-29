@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.sql.Date;
 import java.util.Objects;
 import java.util.Set;
@@ -22,24 +24,32 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
+    @NotNull
+    @Size(min = 1, max = 45)
     @Column
     private String username;
 
+    @NotNull
+    @Size(min = 1, max = 45)
     @Column
     private String password;
 
+    @NotNull
+    @Size(min = 1, max = 45)
     @Column
     private String email;
 
     @Column(name = "is_private")
     private boolean isPrivate;
 
+    @NotNull
     @Column
     private String avatar;
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    @NotNull
     @Column(name = "creation_date")
     private Date creationDate;
 
@@ -55,8 +65,8 @@ public class User {
     )
     private Set<User> blockedUsers;
 
-    @OneToMany(mappedBy = "id")
-    private Set<Follower> followers;
+//    @OneToMany(mappedBy = "id")
+//    private Set<Follower> followers;
 
     @Override
     public boolean equals(Object o) {
@@ -72,12 +82,12 @@ public class User {
                 Objects.equals(getAvatar(), user.getAvatar()) &&
                 Objects.equals(getCreationDate(), user.getCreationDate()) &&
                 Objects.equals(getRole(), user.getRole()) &&
-                Objects.equals(getBlockedUsers(), user.getBlockedUsers()) &&
-                Objects.equals(getFollowers(), user.getFollowers());
+                Objects.equals(getBlockedUsers(), user.getBlockedUsers()
+                );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers(), getFollowers());
+        return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers());
     }
 }
