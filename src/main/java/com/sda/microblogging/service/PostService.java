@@ -30,7 +30,8 @@ public class PostService {
     public Post save(Post post) {
 
         requireNonNull(post.getContent());//should have a content
-        if (post.getContent().trim().isEmpty()){
+        System.out.printf(post.getContent());
+        if (!post.getContent().trim().isEmpty()){
             postRepository.save(post);
         }else {
             throw new RuntimeException("Post should have a content");
@@ -59,4 +60,12 @@ public class PostService {
             return post;
         }
     }
+
+    public List<Post> findAllPostsBasedOnPrivacy(boolean isPrivate) {
+        return postRepository.findTop10ByOwnerIsPrivateOrderByCreationDateDesc(isPrivate);
+    }
+
+//    public List<Post> findAllPublicPostAndMyFollowingsPosts(List<Integer> followingsId){
+//        return postRepository.getAllPublicPostsAndMyFollowingsPosts(followingsId);
+//    }
 }
