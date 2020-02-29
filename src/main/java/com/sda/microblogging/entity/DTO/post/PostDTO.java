@@ -1,4 +1,4 @@
-package com.sda.microblogging.entity.dto.post;
+package com.sda.microblogging.entity.DTO.post;
 
 import com.sda.microblogging.common.RoleTitle;
 import lombok.Getter;

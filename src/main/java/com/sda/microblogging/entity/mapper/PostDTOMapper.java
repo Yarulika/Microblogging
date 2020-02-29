@@ -1,9 +1,15 @@
 package com.sda.microblogging.entity.mapper;
-import com.sda.microblogging.entity.dto.post.PostDTO;
+import com.sda.microblogging.entity.DTO.post.NewPostDTO;
+import com.sda.microblogging.entity.DTO.post.PostDTO;
 import com.sda.microblogging.entity.Post;
+import com.sda.microblogging.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PostDTOMapper {
-
+    @Autowired
+    UserService userService;
 
     public PostDTO convertPostToDTO(Post post){
         PostDTO postDTO = new PostDTO();
@@ -22,4 +28,15 @@ public class PostDTOMapper {
         return postDTO;
     }
 
+    public Post convertDtoToPost(NewPostDTO newPostDTO){
+        Post post = new Post();
+
+        post.setOriginalPost(newPostDTO.getOriginalPost());
+        post.setCreationDate(newPostDTO.getCreationDate());
+        post.setOwner(newPostDTO.getOwner());
+        post.setContent(newPostDTO.getContent());
+        post.setIsEdited(false);
+        post.setOriginalPost(newPostDTO.getOriginalPost());
+        return post;
+    }
 }
