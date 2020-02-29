@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import static springfox.documentation.builders.PathSelectors.regex;
+
+import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
@@ -20,20 +22,14 @@ public class SwaggerConfiguration {
     private String description;
     @Value("${swagger.version}")
     private String version;
-    @Value("${swagger.pathUser}")
-    private String pathUser;
-    @Value("${swagger.pathPost}")
-    private String pathPost;
-    @Value("${swagger.pathComment}")
-    private String pathComment;
+    @Value("${swagger.path}")
+    private String path;
 
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .paths(regex(pathUser+".*"))
-                .paths(regex(pathPost+".*"))
-                .paths(regex(pathComment+".*"))
+                .paths(regex(path))
                 .build()
                 .apiInfo(apiDetails());
     }
