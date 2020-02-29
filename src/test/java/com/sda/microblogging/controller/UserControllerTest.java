@@ -49,7 +49,7 @@ public class UserControllerTest {
         when(userService.findAllActiveUsers()).thenReturn(Arrays.asList(users));
         ResultActions result = mockMvc
                 .perform(
-                        get("/user/allActive"))
+                        get("/microblogging/v1/user/allActive"))
                 .andDo(print());
         result
                 .andExpect(status().isFound())
@@ -76,7 +76,7 @@ public class UserControllerTest {
 
         ResultActions result = mockMvc
                 .perform(
-                        get("/user/username0/followings"))
+                        get("/microblogging/v1/user/username0/followings"))
                 .andDo(print());
         result
                 .andExpect(status().isFound())
@@ -92,7 +92,7 @@ public class UserControllerTest {
         when(userService.findAllActiveUsers()).thenReturn(Arrays.asList(users));
         ResultActions result = mockMvc
                 .perform(
-                        get("/user/allActive"))
+                        get("/microblogging/v1/user/allActive"))
                 .andDo(print());
         result
                 .andExpect(status().isFound())
@@ -108,7 +108,7 @@ public class UserControllerTest {
         when(userService.findUserByUsername(username)).thenReturn(Optional.of(user));
         ResultActions result = mockMvc
                 .perform(
-                        get("/user/usernameX")
+                        get("/microblogging/v1/user/usernameX")
                 ).andDo(print());
         result
                 .andExpect(status().isFound())
@@ -123,7 +123,7 @@ public class UserControllerTest {
     public void getUserByUsername_if_none_returns_NOT_FOUND() throws Exception {
         ResultActions result = mockMvc
                 .perform(
-                        get("/user/any")
+                        get("/microblogging/v1/user/any")
                 ).andDo(print());
         result
                 .andExpect(status().isNotFound());
@@ -135,7 +135,7 @@ public class UserControllerTest {
         when(userService.save(user)).thenReturn(user);
         ResultActions result = mockMvc
                 .perform(
-                        post("/user")
+                        post("/microblogging/v1/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.valueOf(user))
                         .content(asJsonString(user))
@@ -153,7 +153,7 @@ public class UserControllerTest {
 
         ResultActions result = mockMvc
                 .perform(
-                        post("/user")
+                        post("/microblogging/v1/user")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(asJsonString(user))
                                 .accept(MediaType.APPLICATION_JSON))
