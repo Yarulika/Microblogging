@@ -1,6 +1,6 @@
-package com.sda.microblogging.entity.Mapper;
+package com.sda.microblogging.entity.mapper;
 
-import com.sda.microblogging.entity.DTO.post.PostDTO;
+import com.sda.microblogging.entity.dto.post.PostDTO;
 import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;

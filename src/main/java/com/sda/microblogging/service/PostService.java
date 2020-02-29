@@ -24,7 +24,7 @@ public class PostService {
     }
 
     public List<Post> findPostsByOwner(int userId) {
-        return postRepository.findPostsByOwner(userId);
+        return postRepository.findPostsByOwnerUserId(userId);
     }
 
     public Post save(Post post) {

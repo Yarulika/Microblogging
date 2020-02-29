@@ -4,10 +4,11 @@ import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.entity.PostLike;
 import com.sda.microblogging.repository.PostLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-
+@Service
 public class PostLikeService {
 
     @Autowired

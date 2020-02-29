@@ -1,21 +1,13 @@
-package com.sda.microblogging.entity.DTO.post;
+package com.sda.microblogging.entity.dto.post;
 
 import com.sda.microblogging.common.RoleTitle;
-import com.sda.microblogging.service.PostLikeService;
-import com.sda.microblogging.service.PostService;
-import com.sda.microblogging.service.UserService;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.mapstruct.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
-import java.util.List;
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 public class PostDTO {
     private String username;
