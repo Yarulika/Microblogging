@@ -22,12 +22,18 @@ public class SwaggerConfiguration {
     private String version;
     @Value("${swagger.pathUser}")
     private String pathUser;
+    @Value("${swagger.pathPost}")
+    private String pathPost;
+    @Value("${swagger.pathComment}")
+    private String pathComment;
 
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .paths(regex(pathUser+".*"))
+                .paths(regex(pathPost+".*"))
+                .paths(regex(pathComment+".*"))
                 .build()
                 .apiInfo(apiDetails());
     }
