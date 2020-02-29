@@ -1,6 +1,5 @@
-package com.sda.microblogging.entity.Mapper;
-
-import com.sda.microblogging.entity.DTO.post.PostDTO;
+package com.sda.microblogging.entity.mapper;
+import com.sda.microblogging.entity.dto.post.PostDTO;
 import com.sda.microblogging.entity.Post;
 
 public class PostDTOMapper {
