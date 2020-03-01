@@ -32,7 +32,7 @@ public class CommentService {
     }
 
     public List<Comment> findCommentsByPost(int i) {
-        return commentRepository.findCommentsByPost(i);
+        return commentRepository.findCommentsByPostId(i);
     }
 
     public Optional<Comment> findCommentById(int commentId) {
@@ -40,6 +40,6 @@ public class CommentService {
     }
 
     public List<Comment> findCommentsByCommentParent(int commentParentId){
-        return commentRepository.findCommentsByCommentParent(commentParentId);
+        return commentRepository.findCommentsByCommentParentId(commentParentId);
     }
 }
