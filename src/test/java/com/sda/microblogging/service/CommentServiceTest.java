@@ -43,6 +43,8 @@ public class CommentServiceTest {
     private User owningUser;
     private Post post;
     private Comment comment;
+    private Comment childComment1;
+    private Comment childComment2;
     private List<Comment> comments;
     private List<Comment> subComments;
 
@@ -58,8 +60,8 @@ public class CommentServiceTest {
         comment.setCreationDate(Date.valueOf("2020-02-02"));
         comment.setCommentParent(null);
 
-        Comment childComment1 = new Comment(1, "child comment content1", comment.getPost(), comment.getOwner(), Date.valueOf("2020-01-01"), comment);
-        Comment childComment2 = new Comment(2, "child comment content2", comment.getPost(), comment.getOwner(), Date.valueOf("2020-02-02"), comment);
+        childComment1 = new Comment(1, "child comment content1", comment.getPost(), comment.getOwner(), Date.valueOf("2020-01-01"), comment);
+        childComment2 = new Comment(2, "child comment content2", comment.getPost(), comment.getOwner(), Date.valueOf("2020-02-02"), comment);
         comments = new ArrayList<>();
         comments.add(comment);
         comments.add(childComment1);
@@ -71,7 +73,6 @@ public class CommentServiceTest {
 
     @Test
     public void save_returns_saved_comment(){
-        when(userService.findUserById(anyInt())).thenReturn(Optional.of(owningUser));
         when(postService.findPostById(anyInt())).thenReturn(Optional.of(post));
         when(commentRepository.save(ArgumentMatchers.any(Comment.class))).thenReturn(comment);
         Comment actualComment = commentService.save(comment);
@@ -86,13 +87,14 @@ public class CommentServiceTest {
         assertTrue(exception.getMessage().contains("Provided Post was not found"));
     }
 
-    @Test void save_with_not_existing_owning_user_throws_UserNotFoundException(){
+    @Test
+    public void save_with_set_but_not_existing_parent_comment_throws_ParentCommentNotFoundException(){
         when(postService.findPostById(anyInt())).thenReturn(Optional.of(post));
-        when(userService.findUserById(anyInt())).thenReturn(Optional.empty());
-        Exception exception = assertThrows(UserNotFoundException.class, () -> {
-            commentService.save(comment);
+        when(commentRepository.findById(anyInt())).thenReturn(Optional.empty());
+        Exception exception = assertThrows(ParentCommentNotFoundException.class, () -> {
+            commentService.save(childComment1);
         });
-        assertThat(exception.getMessage()).isEqualTo("Given User was not found");
+        assertTrue(exception.getMessage().contains("Provided parent comment was not found"));
     }
 
     @Test

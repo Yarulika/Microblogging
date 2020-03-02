@@ -31,11 +31,10 @@ public class CommentService {
         if (!postService.findPostById(comment.getPost().getId()).isPresent()) {
             throw new PostNotFoundException();
         }
-        else if (!userService.findUserById(comment.getOwner().getUserId()).isPresent()){
-            throw new UserNotFoundException();
-        } else {
-            return commentRepository.save(comment);
+        if (comment.getCommentParent()!= null && !commentRepository.findById(comment.getCommentParent().getId()).isPresent() ){
+            throw new ParentCommentNotFoundException();
         }
+        return commentRepository.save(comment);
     }
 
     public Optional<Comment> findCommentById(int commentId) {
