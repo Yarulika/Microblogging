@@ -77,7 +77,6 @@ public class CommentRepositoryTest {
         List<Comment> actualComments = commentRepository.findCommentsByPostId(post.getId());
 
         assertThat(actualComments).hasSize(3);
-//        assertThat(actualComments.get(0)).isEqualToComparingFieldByField(comment);
         assertThat(actualComments.get(0)).satisfies(actualComment -> {
             assertThat(actualComment.getId()).isEqualTo(comment.getId());
             assertThat(actualComment.getContent()).isEqualTo(comment.getContent());
