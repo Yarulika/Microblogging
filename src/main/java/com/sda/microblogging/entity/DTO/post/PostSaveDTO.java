@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.sql.Date;
 @Getter
 @Setter
-public class NewPostDTO {
+public class PostSaveDTO {
 
     private String content;
     private Boolean isEdited;

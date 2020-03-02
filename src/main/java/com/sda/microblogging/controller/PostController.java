@@ -1,20 +1,15 @@
 package com.sda.microblogging.controller;
 
-import com.sda.microblogging.entity.DTO.post.NewPostDTO;
+import com.sda.microblogging.entity.*;
+import com.sda.microblogging.entity.DTO.post.PostSaveDTO;
 import com.sda.microblogging.entity.DTO.post.PostDTO;
-import com.sda.microblogging.entity.Follower;
-import com.sda.microblogging.entity.Post;
-import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.PostDTOMapper;
-import com.sda.microblogging.service.FollowerService;
+import com.sda.microblogging.service.PostLikeService;
 import com.sda.microblogging.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,17 +23,10 @@ public class PostController {
     @Autowired
     private PostDTOMapper postDTOMapper;
     @Autowired
-    private FollowerService followerService;
+    private PostLikeService postLikeService;
 
-    @GetMapping("/{postId}")
-    public @ResponseBody
-    PostDTO findPostById(@PathVariable @NotBlank int postId){
-        PostDTO postDTO = postDTOMapper.convertPostToDTO(postService.findPostById(postId).get());
-        postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(postId));
-        return postDTO;
-    }
-
-    @GetMapping
+    //TODO maybe we don't need anymore to show all the public posts.. MAYBE
+    @GetMapping("/public/post")
     public @ResponseBody
     List<PostDTO> findAllPublicPosts(){
         return postService.findAllPostsBasedOnPrivacy(false).parallelStream().map(post -> {
@@ -51,21 +39,38 @@ public class PostController {
     @GetMapping("/{userId}")
     public @ResponseBody
     List<PostDTO> findAllMyFollowingsAndPublicPosts(@PathVariable @NotNull int userId){
-
-        //TODO list the post based on my followings and public ons
-
-        return findAllPublicPosts();
+        return postService.findAllPostsAndMyFollowingsPost(userId).parallelStream().map(post -> {
+            PostDTO postDTO = postDTOMapper.convertPostToDTO(post);
+            postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
+            return postDTO;
+        }).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/post/create",method = RequestMethod.POST)
-    @ResponseBody
-    public Post save(@Valid @RequestBody NewPostDTO newPostDTO){
-        return postService.save(postDTOMapper.convertDtoToPost(newPostDTO));
+    public @ResponseBody Post save(@Valid @RequestBody PostSaveDTO postSaveDTO){
+        return postService.save(postDTOMapper.convertDtoToPost(postSaveDTO));
     }
 
     @RequestMapping(value = "/post/share",method = RequestMethod.POST)
     @ResponseBody
-    public Post sharePost(@Valid @RequestBody NewPostDTO newPostDTO){
-        return postService.save(postDTOMapper.convertDtoToPost(newPostDTO));
+    public Post sharePost(@Valid @RequestBody PostSaveDTO postSaveDTO){
+        return postService.save(postDTOMapper.convertDtoToPost(postSaveDTO));
+    }
+
+    @RequestMapping(value = "/post/like",method = RequestMethod.POST)
+    public @ResponseBody
+    void likePost(@Valid @RequestBody PostLike postLike){
+        postLikeService.togglePostLike(postLike);
+    }
+
+    @GetMapping("/posts/{username}")
+    public @ResponseBody
+    List<PostDTO> findPostsByUsername(@Valid @NotNull @PathVariable String username){
+
+        return postService.findPostsByOwnerUsername(username).parallelStream().map(post -> {
+            PostDTO postDTO = postDTOMapper.convertPostToDTO(post);
+            postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
+            return postDTO;
+        }).collect(Collectors.toList());
     }
 }

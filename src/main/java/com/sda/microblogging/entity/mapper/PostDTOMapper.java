@@ -1,5 +1,5 @@
 package com.sda.microblogging.entity.mapper;
-import com.sda.microblogging.entity.DTO.post.NewPostDTO;
+import com.sda.microblogging.entity.DTO.post.PostSaveDTO;
 import com.sda.microblogging.entity.DTO.post.PostDTO;
 import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.service.UserService;
@@ -28,15 +28,15 @@ public class PostDTOMapper {
         return postDTO;
     }
 
-    public Post convertDtoToPost(NewPostDTO newPostDTO){
+    public Post convertDtoToPost(PostSaveDTO postSaveDTO){
         Post post = new Post();
 
-        post.setOriginalPost(newPostDTO.getOriginalPost());
-        post.setCreationDate(newPostDTO.getCreationDate());
-        post.setOwner(newPostDTO.getOwner());
-        post.setContent(newPostDTO.getContent());
+        post.setOriginalPost(postSaveDTO.getOriginalPost());
+        post.setCreationDate(postSaveDTO.getCreationDate());
+        post.setOwner(postSaveDTO.getOwner());
+        post.setContent(postSaveDTO.getContent());
         post.setIsEdited(false);
-        post.setOriginalPost(newPostDTO.getOriginalPost());
+        post.setOriginalPost(postSaveDTO.getOriginalPost());
         return post;
     }
 }

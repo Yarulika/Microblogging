@@ -20,7 +20,7 @@ public class PostService {
     PostRepository postRepository;
 
     public List<Post> findAll() {
-        return postRepository.findAll();
+        return (List<Post>) postRepository.findAll();
     }
 
     public List<Post> findPostsByOwner(int userId) {
@@ -65,7 +65,14 @@ public class PostService {
         return postRepository.findTop10ByOwnerIsPrivateOrderByCreationDateDesc(isPrivate);
     }
 
-//    public List<Post> findAllPublicPostAndMyFollowingsPosts(List<Integer> followingsId){
-//        return postRepository.getAllPublicPostsAndMyFollowingsPosts(followingsId);
-//    }
+    public List<Post> findAllPostsAndMyFollowingsPost(int userId){
+
+        return postRepository.findUserPostAndFollowingUserPost(userId,userId);
+    }
+
+    public List<Post> findPostsByOwnerUsername(String username) {
+
+        //TODO : check if the user is logged in
+        return postRepository.findPostsByOwnerUsernameAndOwnerIsPrivate(username,false);
+    }
 }
