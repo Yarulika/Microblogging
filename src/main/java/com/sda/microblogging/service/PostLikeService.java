@@ -19,7 +19,7 @@ public class PostLikeService {
         if (!postLikeRepository.findByPostAndUser(postLike.getPost(),postLike.getUser()).isPresent()){
             postLikeRepository.save(postLike);
         }else
-            postLikeRepository.delete(postLike);
+            postLikeRepository.delete(postLikeRepository.findByPostAndUser(postLike.getPost(),postLike.getUser()).get());
     }
 
     public Integer getNumberOfLikesByPost(@NotNull Post post) {
