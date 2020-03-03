@@ -6,12 +6,10 @@ import com.sda.microblogging.entity.Comment;
 import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
+import com.sda.microblogging.entity.mapper.CommentDTOMapper;
 import com.sda.microblogging.service.CommentService;
-import com.sda.microblogging.service.PostService;
-import com.sda.microblogging.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,10 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.sql.Array;
 import java.sql.Date;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -31,7 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(CommentController.class)
 public class CommentControllerTest {
@@ -45,13 +40,16 @@ public class CommentControllerTest {
     @MockBean
     private CommentService commentService;
 
+    @MockBean
+    private CommentDTOMapper commentDTOMapper;
+
     public User user;
     public Post post;
     public Comment comment1;
     public Comment comment2;
     public Comment comment3;
     public Comment comment4;
-    private Comment[] comments;
+    public Comment[] comments;
 
     @BeforeEach
     public void initTestData(){
@@ -99,10 +97,11 @@ public class CommentControllerTest {
                 .andReturn();
     }
 
+    //TODO @Test if findCommentsByPostId_returns_PostId_not_found
+
     @Test
     public void findAllSubComments_for_comment_returns_collection_status_isFound() throws Exception{
         when(commentService.findCommentsByCommentParentId(anyInt())).thenReturn(Arrays.asList(comments));
-
         ResultActions results = mockMvc
                 .perform(
                     get("/microblogging/v1/comment/2"))
@@ -115,6 +114,5 @@ public class CommentControllerTest {
                 .andReturn();
     }
 
-    // TODO Update to return DTOs
-    // TODO add info about likes
+    //TODO @Test if findAllSubComments_returns_ParentComment_not_found
 }
