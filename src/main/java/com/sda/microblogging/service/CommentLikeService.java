@@ -24,6 +24,6 @@ public class CommentLikeService {
 
 
     public int getNumberOfCommentLikes(@NotNull int commentId){
-        return commentLikeRepository.countByComment(commentId);
+        return commentLikeRepository.countByCommentId(commentId);
     }
 }
