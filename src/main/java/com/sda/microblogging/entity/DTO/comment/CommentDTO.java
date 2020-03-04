@@ -18,4 +18,5 @@ public class CommentDTO {
     private Date creationDate;
     private Integer commentParentId;
     private int numberOfCommentLikes;
+    private int numberOfCommentShares;
 }
