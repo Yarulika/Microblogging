@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,5 +131,13 @@ public class CommentServiceTest {
             commentService.findCommentsByCommentParentId(comment.getId());
         });
         assertThat(exception.getMessage()).isEqualTo("Provided parent comment was not found");
+    }
+
+    @Test
+    public void findNumberOfRepliedComments_returns_number(){
+        when(commentRepository.findById(anyInt())).thenReturn(Optional.of(comment));
+        when(commentRepository.countByCommentParentId(comment.getId())).thenReturn(subComments.size());
+        commentService.findNumberOfRepliedComments(comment.getId());
+        verify(commentRepository, times(1)).countByCommentParentId(comment.getId());
     }
 }

@@ -2,11 +2,9 @@ package com.sda.microblogging.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
-import com.sda.microblogging.entity.Comment;
-import com.sda.microblogging.entity.Post;
-import com.sda.microblogging.entity.Role;
-import com.sda.microblogging.entity.User;
+import com.sda.microblogging.entity.*;
 import com.sda.microblogging.entity.mapper.CommentDTOMapper;
+import com.sda.microblogging.service.CommentLikeService;
 import com.sda.microblogging.service.CommentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +41,9 @@ public class CommentControllerTest {
     @MockBean
     private CommentDTOMapper commentDTOMapper;
 
+    @MockBean
+    private CommentLikeService commentLikeService;
+
     public User user;
     public Post post;
     public Comment comment1;
@@ -50,10 +51,11 @@ public class CommentControllerTest {
     public Comment comment3;
     public Comment comment4;
     public Comment[] comments;
+    public CommentLike commentLike;
 
     @BeforeEach
     public void initTestData(){
-        user = new User(1, "username0", "password0", "email0@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        user = new User(1, "username0", "password0", "email0@mail.com", true, "avatar", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
         post = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null);
         comment1 = new Comment(1, "comments content1", post, user, Date.valueOf("2020-02-02"), null);
         comment2 = new Comment(2, "comments content2", post, user, Date.valueOf("2020-02-02"), null);
@@ -64,6 +66,7 @@ public class CommentControllerTest {
         comments[1] = comment2;
         comments[2] = comment3;
         comments[3] = comment4;
+        commentLike = new CommentLike(1, comment1, user, Date.valueOf("2020-02-02"));
     }
 
     @Test
@@ -77,6 +80,20 @@ public class CommentControllerTest {
                 )
                 .andDo(print());
 
+        result
+                .andExpect(status().isCreated())
+                .andReturn();
+    }
+
+    @Test
+    public void toggleCommentLike_returns_status_Created() throws Exception{
+        ResultActions result = mockMvc
+                .perform(
+                        post("/microblogging/v1/comment/like")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentLike))
+                )
+                .andDo(print());
         result
                 .andExpect(status().isCreated())
                 .andReturn();
