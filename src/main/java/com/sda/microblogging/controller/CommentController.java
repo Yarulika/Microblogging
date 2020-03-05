@@ -55,7 +55,13 @@ public class CommentController {
     public Iterable<CommentDTO> findCommentsByPostId(@PathVariable @NotBlank int postId){
         return commentService.findCommentsByPostId(postId)
                 .parallelStream()
-                .map(commentDtoMapper::toCommentDto)
+                .map(comment -> {
+                    CommentDTO commentDTO = commentDtoMapper.toCommentDto(
+                            comment,
+                            commentLikeService.getNumberOfCommentLikes(comment.getId()),
+                            commentService.findNumberOfRepliedComments(comment.getId()));
+                    return commentDTO;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -66,7 +72,13 @@ public class CommentController {
     public Iterable<CommentDTO> findCommentsByCommentParentId(@PathVariable @NotBlank int commentParentId){
         return commentService.findCommentsByCommentParentId(commentParentId)
                 .parallelStream()
-                .map(commentDtoMapper::toCommentDto)
+                .map(comment -> {
+                    CommentDTO commentDTO = commentDtoMapper.toCommentDto(
+                            comment,
+                            commentLikeService.getNumberOfCommentLikes(comment.getId()),
+                            commentService.findNumberOfRepliedComments(comment.getId()));
+                    return commentDTO;
+                })
                 .collect(Collectors.toList());
     }
 }
