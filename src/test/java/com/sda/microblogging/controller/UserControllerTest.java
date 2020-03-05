@@ -2,6 +2,7 @@ package com.sda.microblogging.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
+import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
 import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
@@ -133,15 +134,15 @@ public class UserControllerTest {
     }
 
     @Test
-    public void saveNew_user_returns_CREATED() throws Exception {
-        User user = new User(null, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+    public void signUp_new_user_returns_CREATED() throws Exception {
+        UserSignUpDTO userSignUpDTO = new UserSignUpDTO( "username", "email@mail.com", "password");
         User savedUser = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
         when(userService.save(any(User.class))).thenReturn(savedUser);
         ResultActions result = mockMvc
                 .perform(
-                        post("/microblogging/v1/user")
+                        post("/microblogging/v1/user/signUp")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(user))
+                        .content(asJsonString(userSignUpDTO))
                         )
                 .andDo(print());
 
@@ -156,14 +157,13 @@ public class UserControllerTest {
     }
 
     @Test
-    public void saveNewUser_with_insufficient_details_returns_NotAcceptable_status() throws Exception {
-        User user = new User(22, "username", null, null, false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-
+    public void signUp_new_with_insufficient_details_returns_NotAcceptable_status() throws Exception {
+        UserSignUpDTO userSignUpDTO = new UserSignUpDTO( "username", null, null);
         ResultActions result = mockMvc
                 .perform(
-                        post("/microblogging/v1/user")
+                        post("/microblogging/v1/user/signUp")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(user))
+                                .content(asJsonString(userSignUpDTO))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
 

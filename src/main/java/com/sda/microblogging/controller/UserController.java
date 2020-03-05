@@ -3,6 +3,7 @@ package com.sda.microblogging.controller;
 import com.sda.microblogging.entity.DTO.follower.FollowerDTO;
 import com.sda.microblogging.entity.DTO.user.UserDTO;
 import com.sda.microblogging.entity.DTO.user.UserSavedDTO;
+import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.FollowerDTOMapper;
 import com.sda.microblogging.entity.mapper.UserDTOMapper;
@@ -110,10 +111,11 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "Save new user", notes = "Saves new user - returns UserSavedDTO with minimum info")
-    @PostMapping
+    @ApiOperation(value = "Sign up new user", notes = "Saves new user - returns UserSavedDTO with minimum info")
+    @PostMapping(path="/signUp")
     @ResponseBody
-    public ResponseEntity<UserSavedDTO> saveNew(@Valid @RequestBody User user) {
+    public ResponseEntity<UserSavedDTO> signUp(@Valid @RequestBody UserSignUpDTO userSignUpDTO) {
+        User user = userDTOMapper.fromUserSignUpDTOtoUser(userSignUpDTO);
         User savedUser = userService.save(user);
         UserSavedDTO userSavedDTO = userDTOMapper.toUserSavedDto(savedUser);
         return new ResponseEntity<>(userSavedDTO, HttpStatus.CREATED);
