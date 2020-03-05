@@ -37,10 +37,11 @@ public class CommentController {
     @ResponseBody
     public ResponseEntity<CommentSavedDTO> saveNew(@Valid @RequestBody Comment comment){
         Comment commentSaved = commentService.save(comment);
-        return new ResponseEntity<>(commentDtoMapper.toCommentSavedDto(commentSaved), HttpStatus.CREATED);
+        CommentSavedDTO commentSavedDTO = commentDtoMapper.toCommentSavedDto(commentSaved);
+        return new ResponseEntity<>(commentSavedDTO, HttpStatus.CREATED);
     }
 
-    @ApiOperation(value = "Toggle comment", notes = "Add or delete comment like")
+    @ApiOperation(value = "Toggle comment like", notes = "Add or delete comment like")
     @PostMapping(path="/comment/like")
     @ResponseStatus(HttpStatus.CREATED)
     public void toggleCommentLike(@Valid @RequestBody CommentLike commentLike){

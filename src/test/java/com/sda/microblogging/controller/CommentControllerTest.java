@@ -3,13 +3,13 @@ package com.sda.microblogging.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.*;
-import com.sda.microblogging.entity.mapper.CommentDTOMapper;
 import com.sda.microblogging.service.CommentLikeService;
 import com.sda.microblogging.service.CommentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,6 +19,7 @@ import java.sql.Date;
 import java.util.Arrays;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,7 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CommentController.class)
+@AutoConfigureMockMvc
+@SpringBootTest
 public class CommentControllerTest {
 
     @Autowired
@@ -37,9 +39,6 @@ public class CommentControllerTest {
 
     @MockBean
     private CommentService commentService;
-
-    @MockBean
-    private CommentDTOMapper commentDTOMapper;
 
     @MockBean
     private CommentLikeService commentLikeService;
@@ -70,8 +69,8 @@ public class CommentControllerTest {
     }
 
     @Test
-    public void saveNew_returns_saved_comment() throws Exception{
-        when(commentService.save(comment1)).thenReturn(comment1);
+    public void saveNew_returns_saved_comment() throws Exception {
+        when(commentService.save(any(Comment.class))).thenReturn(comment1);
         ResultActions result = mockMvc
                 .perform(
                         post("/microblogging/v1/comment")
@@ -82,6 +81,11 @@ public class CommentControllerTest {
 
         result
                 .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("id").value("1"))
+                .andExpect(jsonPath("content").value("comments content1"))
+                .andExpect(jsonPath("$.*").isArray())
+                .andExpect(jsonPath("$.*", hasSize(4)))
                 .andReturn();
     }
 
