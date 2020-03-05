@@ -9,7 +9,8 @@ import com.sda.microblogging.service.FollowerService;
 import com.sda.microblogging.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,13 +21,15 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UserController.class)
+@AutoConfigureMockMvc
+@SpringBootTest
 public class UserControllerTest {
 
     @Autowired
@@ -40,8 +43,8 @@ public class UserControllerTest {
 
     @Test
     public void getAllActiveUsers_returns_collection_of_active_users() throws Exception {
-        User user0 = new User(null, "username1", "password1", "email1@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(1, RoleTitle.ADMIN), null);
-        User user1 = new User(null, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(1, RoleTitle.ADMIN), null);
+        User user0 = new User(1, "username1", "password1", "email1@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(1, RoleTitle.ADMIN), null);
+        User user1 = new User(2, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(1, RoleTitle.ADMIN), null);
         User[] users = new User[2];
         users[0] = user0;
         users[1] = user1;
@@ -104,7 +107,7 @@ public class UserControllerTest {
     @Test
     public void getUserByValidUsername_returnsUser() throws Exception {
         String username = "usernameX";
-        User user = new User(null, username, "password", "email", true, null, false, null, null, null);
+        User user = new User(1, username, "password", "email", true, null, false, null, null, null);
         when(userService.findUserByUsername(username)).thenReturn(Optional.of(user));
         ResultActions result = mockMvc
                 .perform(
@@ -131,19 +134,24 @@ public class UserControllerTest {
 
     @Test
     public void saveNew_user_returns_CREATED() throws Exception {
-        User user = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-        when(userService.save(user)).thenReturn(user);
+        User user = new User(null, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        User savedUser = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        when(userService.save(any(User.class))).thenReturn(savedUser);
         ResultActions result = mockMvc
                 .perform(
                         post("/microblogging/v1/user")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(String.valueOf(user))
                         .content(asJsonString(user))
                         )
                 .andDo(print());
 
         result
                 .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("userId").value("22"))
+                .andExpect(jsonPath("username").value("username"))
+                .andExpect(jsonPath("$.*").isArray())
+                .andExpect(jsonPath("$.*", hasSize(5)))
                 .andReturn();
     }
 
