@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -181,12 +182,28 @@ public class UserControllerTest {
         ResultActions resultActions = mockMvc
                 .perform(
                         post("/microblogging/v1/user/login")
-                            .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userLoginDTO))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
         resultActions
                 .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    public void login_with_incorrect_user_details_returns_ERROR() throws Exception {
+        UserLoginDTO userLoginDTO = new UserLoginDTO("email@bla.com", "pass");
+        when(userService.findUserByEmail(anyString())).thenReturn(Optional.empty());
+        ResultActions resultActions = mockMvc
+                .perform(
+                        post("/microblogging/v1/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userLoginDTO))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print());
+        resultActions
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
