@@ -2,6 +2,7 @@ package com.sda.microblogging.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
+import com.sda.microblogging.entity.DTO.user.UserLoginDTO;
 import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
 import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
@@ -136,7 +137,7 @@ public class UserControllerTest {
     @Test
     public void signUp_new_user_returns_CREATED() throws Exception {
         UserSignUpDTO userSignUpDTO = new UserSignUpDTO( "username", "email@mail.com", "password");
-        User savedUser = new User(22, "username", "password", "email@mail.com", false, "cool me", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        User savedUser = new User(22, "username", "password", "email@mail.com", false, "cool I", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
         when(userService.save(any(User.class))).thenReturn(savedUser);
         ResultActions result = mockMvc
                 .perform(
@@ -169,6 +170,23 @@ public class UserControllerTest {
 
         result
                 .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    public void login_with_existing_user_returns_OK() throws Exception {
+        UserLoginDTO userLoginDTO = new UserLoginDTO("email@email.com", "password");
+        User user = new User(22, "username", "password", "email@email.com", false, "cool I", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        when(userService.findUserByEmail(userLoginDTO.getEmail())).thenReturn(Optional.of(user));
+        ResultActions resultActions = mockMvc
+                .perform(
+                        post("/microblogging/v1/user/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userLoginDTO))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print());
+        resultActions
+                .andExpect(status().isOk())
                 .andReturn();
     }
 

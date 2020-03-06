@@ -2,6 +2,7 @@ package com.sda.microblogging.controller;
 
 import com.sda.microblogging.entity.DTO.follower.FollowerDTO;
 import com.sda.microblogging.entity.DTO.user.UserDTO;
+import com.sda.microblogging.entity.DTO.user.UserLoginDTO;
 import com.sda.microblogging.entity.DTO.user.UserSavedDTO;
 import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
 import com.sda.microblogging.entity.User;
@@ -119,5 +120,18 @@ public class UserController {
         User savedUser = userService.save(user);
         UserSavedDTO userSavedDTO = userDTOMapper.toUserSavedDto(savedUser);
         return new ResponseEntity<>(userSavedDTO, HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value = "Login with existing user", notes = "Login with existing user: if details are ok - FOUND status is returned")
+    @PostMapping(path = "/login")
+    public ResponseEntity login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+        // TODO Below is temporary: just before Security implementation
+        Optional<User> user = userService.findUserByEmail(userLoginDTO.getEmail());
+        if ((user.isPresent()) && (user.get().getPassword().equals(userLoginDTO.getPassword()))) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 }
