@@ -11,9 +11,6 @@ import java.sql.Date;
 @Builder
 public class FollowerDTO {
     private Integer id;
-    private Integer userId;
-    private String userUsername;
-    private String userAvatar;
     private Integer followerId;
     private String followerUsername;
     private String followerAvatar;

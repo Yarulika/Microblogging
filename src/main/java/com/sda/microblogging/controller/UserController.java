@@ -112,10 +112,13 @@ public class UserController {
     @ApiOperation(value = "Sign up new user", notes = "Saves new user - returns UserSavedDTO with minimum info")
     @PostMapping(path = "/signUp")
     @ResponseBody
-    public ResponseEntity<UserSavedDTO> signUp(@Valid @RequestBody UserSignUpDTO userSignUpDTO) {
+    public ResponseEntity<UserDTO> signUp(@Valid @RequestBody UserSignUpDTO userSignUpDTO) {
         User user = userDTOMapper.fromUserSignUpDTOtoUser(userSignUpDTO);
         User savedUser = userService.save(user);
-        UserSavedDTO userSavedDTO = userDTOMapper.toUserSavedDto(savedUser);
+        UserDTO userSavedDTO = userDTOMapper.toUserDto(
+                savedUser,
+                followerService.countFollowersByUserId(savedUser.getUserId()),
+                followerService.countFollowingByFollowerId(savedUser.getUserId()));
         return new ResponseEntity<>(userSavedDTO, HttpStatus.CREATED);
     }
 

@@ -1,6 +1,6 @@
 package com.sda.microblogging.entity.DTO.user;
 
-import com.sda.microblogging.entity.Role;
+import com.sda.microblogging.common.RoleTitle;
 import lombok.*;
 
 import java.sql.Date;
@@ -18,7 +18,7 @@ public class UserDTO {
     private String avatar;
     private boolean isBlocked;
     private Date creationDate;
-    private Role role;
+    private RoleTitle title;
     private int numberOfFollowers;
     private int numberOfFollowing;
 }

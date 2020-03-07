@@ -2,7 +2,6 @@ package com.sda.microblogging.entity.mapper;
 
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.DTO.user.UserDTO;
-import com.sda.microblogging.entity.DTO.user.UserSavedDTO;
 import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
@@ -13,19 +12,6 @@ import java.sql.Date;
 
 @Component
 public class UserDTOMapper {
-
-    public UserSavedDTO toUserSavedDto(User user){
-        if (user.getUserId() == null) {
-            throw new UserNotFoundException();
-        }
-        return UserSavedDTO.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .creationDate(user.getCreationDate())
-                .role(user.getRole())
-                .build();
-    }
 
     public UserDTO toUserDto(User user, int numberOfFollowers, int numberOfFollowing){
         if (user.getUserId() == null) {
@@ -39,7 +25,7 @@ public class UserDTOMapper {
                 .avatar(user.getAvatar())
                 .isBlocked(user.isBlocked())
                 .creationDate(user.getCreationDate())
-                .role(user.getRole())
+                .title(user.getRole().getTitle())
                 .numberOfFollowers(numberOfFollowers)
                 .numberOfFollowing(numberOfFollowing)
                 .build();

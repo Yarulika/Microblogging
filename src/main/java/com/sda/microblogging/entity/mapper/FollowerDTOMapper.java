@@ -11,9 +11,6 @@ public class FollowerDTOMapper {
 
         return FollowerDTO.builder()
                 .id(follower.getId())
-                .userId(follower.getUser().getUserId())
-                .userUsername(follower.getUser().getUsername())
-                .userAvatar(follower.getUser().getAvatar())
                 .followerId(follower.getFollower().getUserId())
                 .followerUsername(follower.getFollower().getUsername())
                 .followerAvatar(follower.getFollower().getAvatar())

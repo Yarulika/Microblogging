@@ -110,7 +110,7 @@ public class UserControllerTest {
     @Test
     public void getUserByValidUsername_returnsUser() throws Exception {
         String username = "usernameX";
-        User user = new User(1, username, "password", "email", true, null, false, null, null, null);
+        User user = new User(1, username, "password", "email", true, null, false, null, new Role(2, RoleTitle.USER), null);
         when(userService.findUserByUsername(username)).thenReturn(Optional.of(user));
         ResultActions result = mockMvc
                 .perform(
@@ -154,7 +154,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("userId").value("22"))
                 .andExpect(jsonPath("username").value("username"))
                 .andExpect(jsonPath("$.*").isArray())
-                .andExpect(jsonPath("$.*", hasSize(5)))
+                .andExpect(jsonPath("$.*", hasSize(10)))
                 .andReturn();
     }
 
