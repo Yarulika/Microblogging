@@ -3,6 +3,7 @@ package com.sda.microblogging.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.DTO.user.UserLoginDTO;
+import com.sda.microblogging.entity.DTO.user.UserPasswordDTO;
 import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
 import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
@@ -26,8 +27,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -186,6 +186,25 @@ public class UserControllerTest {
                         .content(asJsonString(userLoginDTO))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
+        resultActions
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test void updatePassword_with_existing_user_and_correct_old_password_returns_OK() throws Exception{
+        // TODO Below is temporary: just before Security implementation
+        UserPasswordDTO userPasswordDTO = new UserPasswordDTO("password", "newPassword");
+        User user = new User(22, "username", "password", "email@email.com", false, "cool I", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        when(userService.findUserById(any())).thenReturn(Optional.of(user));
+        when(userService.updateUserPassword(user.getUserId(), userPasswordDTO.getNewPassword())).thenReturn(user);
+
+        ResultActions resultActions = mockMvc
+                .perform(
+                        patch("/microblogging/v1/user/updatePassword?userId=22")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userPasswordDTO)) )
+                .andDo(print());
+
         resultActions
                 .andExpect(status().isOk())
                 .andReturn();

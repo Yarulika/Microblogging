@@ -1,10 +1,7 @@
 package com.sda.microblogging.controller;
 
 import com.sda.microblogging.entity.DTO.follower.FollowerDTO;
-import com.sda.microblogging.entity.DTO.user.UserDTO;
-import com.sda.microblogging.entity.DTO.user.UserLoginDTO;
-import com.sda.microblogging.entity.DTO.user.UserSavedDTO;
-import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
+import com.sda.microblogging.entity.DTO.user.*;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.FollowerDTOMapper;
 import com.sda.microblogging.entity.mapper.UserDTOMapper;
@@ -60,7 +57,7 @@ public class UserController {
     @GetMapping(path = "/{username}/followers")
     @ResponseStatus(HttpStatus.FOUND)
     @ResponseBody
-    public Iterable<FollowerDTO> findAllFollowersByUsername(@PathVariable @NotBlank String username){
+    public Iterable<FollowerDTO> findAllFollowersByUsername(@PathVariable @NotBlank String username) {
         int id = userService.findUserByUsername(username).get().getUserId();
         return followerService.getAllFollowersByUserId(id)
                 .parallelStream()
@@ -72,7 +69,7 @@ public class UserController {
     @GetMapping(path = "/{username}/followings")
     @ResponseStatus(HttpStatus.FOUND)
     @ResponseBody
-    public Iterable<FollowerDTO> findAllFollowingByFollowerUsername(@PathVariable @NotBlank String username){
+    public Iterable<FollowerDTO> findAllFollowingByFollowerUsername(@PathVariable @NotBlank String username) {
         int id = userService.findUserByUsername(username).get().getUserId();
         return followerService.getAllFollowingByFollowerId(id)
                 .parallelStream()
@@ -113,7 +110,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Sign up new user", notes = "Saves new user - returns UserSavedDTO with minimum info")
-    @PostMapping(path="/signUp")
+    @PostMapping(path = "/signUp")
     @ResponseBody
     public ResponseEntity<UserSavedDTO> signUp(@Valid @RequestBody UserSignUpDTO userSignUpDTO) {
         User user = userDTOMapper.fromUserSignUpDTOtoUser(userSignUpDTO);
@@ -129,8 +126,21 @@ public class UserController {
         Optional<User> user = userService.findUserByEmail(userLoginDTO.getEmail());
         if ((user.isPresent()) && (user.get().getPassword().equals(userLoginDTO.getPassword()))) {
             return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        else {
+    }
+
+    @ApiOperation(value = "Update user password", notes = "Update user password")
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(path = "/updatePassword")
+    public ResponseEntity updatePassword(@NotNull @RequestParam int userId, @Valid @RequestBody UserPasswordDTO userPasswordDTO) {
+        // TODO Below is temporary: just before Security implementation
+        Optional<User> updatingUser = userService.findUserById(userId);
+        if (updatingUser.isPresent() && updatingUser.get().getPassword().equals(userPasswordDTO.getOldPassword())) {
+            userService.updateUserPassword(userId, userPasswordDTO.getNewPassword());
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
