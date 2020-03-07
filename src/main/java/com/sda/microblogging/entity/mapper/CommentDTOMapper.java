@@ -3,21 +3,12 @@ package com.sda.microblogging.entity.mapper;
 import com.sda.microblogging.entity.Comment;
 import com.sda.microblogging.entity.DTO.comment.CommentDTO;
 import com.sda.microblogging.entity.DTO.comment.CommentSavedDTO;
-import com.sda.microblogging.service.CommentLikeService;
-import com.sda.microblogging.service.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CommentDTOMapper {
 
-    @Autowired
-    CommentLikeService commentLikeService;
-
-    @Autowired
-    CommentService commentService;
-
-    public CommentDTO toCommentDto(Comment comment){
+    public CommentDTO toCommentDto(Comment comment, int numberCommentLikes, int numberCommentShares){
         Integer commentParentID = null;
         if (comment.getCommentParent() != null) {
             commentParentID = comment.getCommentParent().getId();
@@ -31,8 +22,8 @@ public class CommentDTOMapper {
                 .userOwnerUsername(comment.getOwner().getUsername())
                 .creationDate(comment.getCreationDate())
                 .commentParentId(commentParentID)
-                .numberOfCommentLikes(commentLikeService.getNumberOfCommentLikes(comment.getId()))
-                .numberOfCommentShares(commentService.findNumberOfRepliedComments(comment.getId()))
+                .numberOfCommentLikes(numberCommentLikes)
+                .numberOfCommentShares(numberCommentShares)
                 .build();
     }
 
