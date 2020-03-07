@@ -1,6 +1,7 @@
 package com.sda.microblogging.entity.DTO.post;
 
 import com.sda.microblogging.common.RoleTitle;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 import java.sql.Date;
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 public class PostDTO {
     private String username;
     private int userId;
@@ -22,4 +23,5 @@ public class PostDTO {
     private Date postCreatedDate;
     private int numberOfPostLikes;
     private int numberOfComments;
+    private boolean isPostLiked;
 }

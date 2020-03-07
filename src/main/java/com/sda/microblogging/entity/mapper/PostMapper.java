@@ -7,25 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PostDTOMapper {
-    @Autowired
-    UserService userService;
+public class PostMapper {
 
     public PostDTO convertPostToDTO(Post post){
-        PostDTO postDTO = new PostDTO();
-
-        postDTO.setUsername(post.getOwner().getUsername());
-        postDTO.setUserId(post.getOwner().getUserId());
-        postDTO.setUserPrivate(post.getOwner().isPrivate());
-        postDTO.setUserRole(post.getOwner().getRole().getTitle());
-        postDTO.setAvatar(post.getOwner().getAvatar());
-        postDTO.setNumberOfPostLikes(post.getLikes().size());
-        postDTO.setPostId(post.getId());
-        postDTO.setContent(post.getContent());
-        postDTO.setPostEdited(post.getIsEdited());
-        postDTO.setPostCreatedDate(post.getCreationDate());
-        postDTO.setNumberOfComments(post.getComments().size());
-        return postDTO;
+        return PostDTO.builder()
+                .username(post.getOwner().getUsername())
+                .userId(post.getOwner().getUserId())
+                .isUserPrivate(post.getOwner().isPrivate())
+                .userRole(post.getOwner().getRole().getTitle())
+                .avatar(post.getOwner().getAvatar())
+                .numberOfPostLikes(post.getLikes().size())
+                .postId(post.getId())
+                .content(post.getContent())
+                .isPostEdited(post.getIsEdited())
+                .postCreatedDate(post.getCreationDate())
+                .numberOfComments(post.getComments().size())
+                .build();
     }
 
     public Post convertDtoToPost(PostSaveDTO postSaveDTO){

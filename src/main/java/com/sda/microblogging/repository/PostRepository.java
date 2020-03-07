@@ -15,6 +15,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     List<Post> findTop10ByOwnerIsPrivateOrderByCreationDateDesc(boolean isPrivate);
     List<Post> findPostsByOwnerUsernameAndOwnerIsPrivate(String username,boolean isPrivate);
 
+
     @Query(value = "select * from posts p where p.owner_id in ((select f.user_id from followers f where f.follower_user_id=?1), ?2);",nativeQuery = true)
     List<Post> findUserPostAndFollowingUserPost(Integer userId, Integer usersId);
 }
