@@ -10,18 +10,28 @@ import org.springframework.stereotype.Component;
 public class PostMapper {
 
     public PostDTO convertPostToDTO(Post post){
+        int numberOfPostLikes = 0;
+        if (post.getLikes() != null) {
+            numberOfPostLikes = post.getLikes().size();
+        }
+
+        int numberOfComments = 0;
+        if (post.getComments() != null) {
+            numberOfComments = post.getComments().size();
+        }
+
         return PostDTO.builder()
                 .username(post.getOwner().getUsername())
                 .userId(post.getOwner().getUserId())
                 .isUserPrivate(post.getOwner().isPrivate())
                 .userRole(post.getOwner().getRole().getTitle())
                 .avatar(post.getOwner().getAvatar())
-                .numberOfPostLikes(post.getLikes().size())
+                .numberOfPostLikes(numberOfPostLikes)
                 .postId(post.getId())
                 .content(post.getContent())
                 .isPostEdited(post.getIsEdited())
                 .postCreatedDate(post.getCreationDate())
-                .numberOfComments(post.getComments().size())
+                .numberOfComments(numberOfComments)
                 .build();
     }
 
