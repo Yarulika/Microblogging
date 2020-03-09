@@ -8,6 +8,6 @@ public class InvalidEmailOrPasswordException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "User email or password were not found";
+        return "Invalid Email or Password";
     }
 }

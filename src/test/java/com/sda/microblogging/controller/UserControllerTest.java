@@ -223,6 +223,7 @@ public class UserControllerTest {
                 .andDo(print());
         resultActions
                 .andExpect(status().isNotFound())
+                .andExpect(status().reason("Invalid Email or Password"))
                 .andReturn();
     }
 
