@@ -222,7 +222,8 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
         resultActions
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason("Invalid Email or Password"))
                 .andReturn();
     }
 

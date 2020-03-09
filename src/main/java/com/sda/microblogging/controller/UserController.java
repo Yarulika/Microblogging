@@ -5,6 +5,7 @@ import com.sda.microblogging.entity.DTO.user.*;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.FollowerDTOMapper;
 import com.sda.microblogging.entity.mapper.UserDTOMapper;
+import com.sda.microblogging.exception.InvalidEmailOrPasswordException;
 import com.sda.microblogging.service.FollowerService;
 import com.sda.microblogging.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -124,13 +125,17 @@ public class UserController {
 
     @ApiOperation(value = "Login with existing user", notes = "Login with existing user: if details are ok - FOUND status is returned")
     @PostMapping(path = "/login")
-    public ResponseEntity login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+    public ResponseEntity<UserDTO> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         // TODO Below is temporary: just before Security implementation
         Optional<User> user = userService.findUserByEmail(userLoginDTO.getEmail());
-        if ((user.isPresent()) && (user.get().getPassword().equals(userLoginDTO.getPassword()))) {
-            return ResponseEntity.status(HttpStatus.OK).build();
+        if (!(user.isPresent()) || !(user.get().getPassword().equals(userLoginDTO.getPassword()))) {
+            throw new InvalidEmailOrPasswordException();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            UserDTO loggedInUser = userDTOMapper.toUserDto(
+                    user.get(),
+                    followerService.countFollowersByUserId(user.get().getUserId()),
+                    followerService.countFollowingByFollowerId(user.get().getUserId()));
+            return new ResponseEntity<>(loggedInUser, HttpStatus.OK);
         }
     }
 
