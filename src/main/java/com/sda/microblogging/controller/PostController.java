@@ -76,8 +76,8 @@ public class PostController {
     @ApiOperation(value = "Share post", notes = "Share post")
     @PostMapping("/share")
     @ResponseBody
-    public Post sharePost(@Valid @RequestBody PostSaveDTO postSaveDTO) {
-        return postService.save(postMapper.convertDtoToPost(postSaveDTO));
+    public PostDTO sharePost(@Valid @RequestBody PostSaveDTO postSaveDTO) {
+        return postMapper.convertPostToDTO(postService.save(postMapper.convertDtoToPost(postSaveDTO)));
     }
 
     @ApiOperation(value = "Like post", notes = "Create post like")

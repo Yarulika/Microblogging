@@ -39,7 +39,7 @@ public class PostService {
         }else {
             throw new RuntimeException("Post should have a content");
         }
-        return postRepository.save(post);
+        return new Post();
     }
 
     public List<Post> findByOrderByCreationDate() {
