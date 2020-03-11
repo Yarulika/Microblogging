@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -70,6 +72,21 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public TokenStore tokenStore(DataSource dataSource){
         return new JdbcTokenStore(dataSource);
+    }
+
+    @Override
+    public void configure(HttpSecurity httpSecurity) throws Exception{
+        httpSecurity.authorizeRequests().antMatchers("/oauth/token/**")
+                .permitAll()
+                .and()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .csrf()
+                .disable();
     }
 
 }

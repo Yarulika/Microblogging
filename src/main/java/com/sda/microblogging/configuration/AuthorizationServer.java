@@ -1,10 +1,12 @@
 package com.sda.microblogging.configuration;
 
+import com.sda.microblogging.service.ClientDetailsImplementationService;
 import com.sda.microblogging.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -24,6 +26,9 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ClientDetailsImplementationService clientDetailsImplementationService;
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
@@ -40,4 +45,10 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
         security.tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()");
     }
+
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.withClientDetails(clientDetailsImplementationService);
+    }
+
 }
