@@ -33,7 +33,7 @@ public class PostController {
     @ResponseBody
     public List<PostDTO> findAllPublicPosts() {
         return postService.findAllPostsBasedOnPrivacy(false).parallelStream().map(post -> {
-             PostDTO postDTO = postMapper.convertPostToDTO(post);
+             PostDTO postDTO = postMapper.convertPostToPostDTO(post);
              postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
              postDTO.setPostLiked(postLikeService.checkIfThePostIsLiked(post.getOwner(),post));
              return postDTO;
@@ -45,7 +45,7 @@ public class PostController {
     @ResponseBody
     public List<PostDTO> findAllMyFollowingsAndPublicPosts(@PathVariable @NotNull int userId) {
         return postService.findAllPostsAndMyFollowingsPost(userId).parallelStream().map(post -> {
-            PostDTO postDTO = postMapper.convertPostToDTO(post);
+            PostDTO postDTO = postMapper.convertPostToPostDTO(post);
             postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
             postDTO.setPostLiked(postLikeService.checkIfThePostIsLiked(post.getOwner(),post));
             return postDTO;
@@ -58,7 +58,7 @@ public class PostController {
     public List<PostDTO> findPostsByUsername(@Valid @NotNull @PathVariable String username) {
 
         return postService.findPostsByOwnerUsername(username).parallelStream().map(post -> {
-            PostDTO postDTO = postMapper.convertPostToDTO(post);
+            PostDTO postDTO = postMapper.convertPostToPostDTO(post);
             postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
             postDTO.setPostLiked(postLikeService.checkIfThePostIsLiked(post.getOwner(), post));
             return postDTO;
@@ -69,19 +69,31 @@ public class PostController {
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Post save(@Valid @RequestBody PostSaveDTO postSaveDTO) {
-        return postService.save(postMapper.convertDtoToPost(postSaveDTO));
+    public PostDTO save(@Valid @RequestBody PostSaveDTO postSaveDTO) {
+        // TODO finish
+        Post post = postMapper.convertPostSaveDtoToPost(postSaveDTO);
+        System.out.println("\n POST converted: " + post.toString());
+
+        Post savedPost = postService.save(post);
+        System.out.println("\n POST saved: " + savedPost.toString());
+        System.out.println("\n getOwner" + savedPost.getOwner().toString());
+
+        return postMapper.convertPostToPostDTO(savedPost);
     }
 
     @ApiOperation(value = "Share post", notes = "Share post")
     @PostMapping("/share")
+    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public PostDTO sharePost(@Valid @RequestBody PostSaveDTO postSaveDTO) {
-        return postMapper.convertPostToDTO(postService.save(postMapper.convertDtoToPost(postSaveDTO)));
+        Post post = postMapper.convertPostSaveDtoToPost(postSaveDTO);
+        Post savedPost = postService.save(post);
+        return postMapper.convertPostToPostDTO(savedPost);
     }
 
     @ApiOperation(value = "Like post", notes = "Create post like")
     @PostMapping("/like")
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void likePost(@Valid @RequestBody PostLike postLike) {
         postLikeService.togglePostLike(postLike);

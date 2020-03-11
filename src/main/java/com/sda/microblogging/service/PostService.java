@@ -2,6 +2,7 @@ package com.sda.microblogging.service;
 
 import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.entity.mapper.PostMapper;
+import com.sda.microblogging.exception.PostHasNoContentException;
 import com.sda.microblogging.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,15 +32,14 @@ public class PostService {
     }
 
     public Post save(Post post) {
-
         requireNonNull(post.getContent());//should have a content
 
-        if (!post.getContent().trim().isEmpty()){
-            postRepository.save(post);
-        }else {
-            throw new RuntimeException("Post should have a content");
+        if (post.getContent().trim().isEmpty()){
+            throw new PostHasNoContentException();
         }
-        return new Post();
+        else {
+            return postRepository.save(post);
+        }
     }
 
     public List<Post> findByOrderByCreationDate() {

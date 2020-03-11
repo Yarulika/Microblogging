@@ -2,10 +2,7 @@ package com.sda.microblogging.entity.DTO.post;
 
 import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
@@ -13,6 +10,7 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PostSaveDTO {
 
     private String content;

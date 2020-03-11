@@ -1,15 +1,21 @@
 package com.sda.microblogging.entity.mapper;
+import com.sda.microblogging.entity.*;
 import com.sda.microblogging.entity.DTO.post.PostSaveDTO;
 import com.sda.microblogging.entity.DTO.post.PostDTO;
-import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import java.sql.Date;
+import java.util.List;
+import java.util.Set;
+
 @Component
 public class PostMapper {
 
-    public PostDTO convertPostToDTO(Post post){
+    public PostDTO convertPostToPostDTO(Post post){
         int numberOfPostLikes = 0;
         if (post.getLikes() != null) {
             numberOfPostLikes = post.getLikes().size();
@@ -35,15 +41,13 @@ public class PostMapper {
                 .build();
     }
 
-    public Post convertDtoToPost(PostSaveDTO postSaveDTO){
-        Post post = new Post();
-
-        post.setOriginalPost(postSaveDTO.getOriginalPost());
-        post.setCreationDate(postSaveDTO.getCreationDate());
-        post.setOwner(postSaveDTO.getOwner());
-        post.setContent(postSaveDTO.getContent());
-        post.setIsEdited(false);
-        post.setOriginalPost(postSaveDTO.getOriginalPost());
-        return post;
+    public Post convertPostSaveDtoToPost(PostSaveDTO postSaveDTO){
+        return Post.builder()
+                .content(postSaveDTO.getContent())
+                .isEdited(false)
+                .owner(postSaveDTO.getOwner())
+                .creationDate(postSaveDTO.getCreationDate())
+                .originalPost(postSaveDTO.getOriginalPost())
+                .build();
     }
 }

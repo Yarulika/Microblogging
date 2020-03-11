@@ -16,6 +16,11 @@ public class GlobalControllerAdvice {
         response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
     }
 
+    @ExceptionHandler(PostHasNoContentException.class)
+    public void handlePostHasNoContentException(PostHasNoContentException exception, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+    }
+
     @ExceptionHandler(PostNotFoundException.class)
     public void handlePostNotFoundException(PostNotFoundException exception, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());

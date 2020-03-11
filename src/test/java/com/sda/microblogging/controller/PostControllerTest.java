@@ -69,9 +69,10 @@ public class PostControllerTest {
     @Test
     public void save_post_returns_CREATED() {
         User user = new User(1, "username0", "password0", "email0@mail.com", true, "avatar", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-        Post post = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null,null,null);
+        Post post = new Post(null, "post content", false, user, Date.valueOf("2020-02-02"), null, null,null,null);
+        Post savedPost = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null,null,null);
 
-        when(postService.save(any(Post.class))).thenReturn(post);
+        when(postService.save(any(Post.class))).thenReturn(savedPost);
 
         ResultActions result     = mockMvc
                 .perform(
@@ -84,9 +85,10 @@ public class PostControllerTest {
         result
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value("1"))
+                .andExpect(jsonPath("postId").value("1"))
+                .andExpect(jsonPath("content").value("post content"))
                 .andExpect(jsonPath("$.*").isArray())
-                .andExpect(jsonPath("$.*", hasSize(9)))
+                .andExpect(jsonPath("$.*", hasSize(13)))
                 .andReturn();
     }
 
@@ -102,7 +104,7 @@ public class PostControllerTest {
     }
 
     @Test
-    public void post_like_return_ok() throws Exception{
+    public void likePost_returns_ok() throws Exception{
         PostLike postLike=  new PostLike();
 
         Post p = new Post();
@@ -125,19 +127,17 @@ public class PostControllerTest {
                 .andExpect(status().isOk());
     }
     @Test
-    public void post_share_return_bad_request() throws Exception{
+    public void sharePost_returns_CREATED() throws Exception{
+        User user = new User(1, "username0", "password0", "email0@mail.com", true, "avatar", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        Post post = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null,null,null);
 
-        PostSaveDTO post = new PostSaveDTO();
-        PostMapper postMapper = new PostMapper();
-
-        post.setOwner(new User());
-        when(postService.save(postMapper.convertDtoToPost(post))).thenReturn(postMapper.convertDtoToPost(post));
+        when(postService.save(any(Post.class))).thenReturn(post);
 
         mockMvc.perform(
                 post("/microblogging/v1/post/share")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(post)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         verify(postService,times(1)).save(any(Post.class));
