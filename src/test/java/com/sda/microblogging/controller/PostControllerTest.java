@@ -149,7 +149,7 @@ public class PostControllerTest {
         mockMvc.perform(
                 get("/microblogging/v1/post/byUserId/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isFound())
                 .andReturn();
     }
 }

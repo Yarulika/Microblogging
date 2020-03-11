@@ -42,6 +42,7 @@ public class PostController {
 
     @ApiOperation(value = "Get all my followings and public posts", notes = "Get all my followings and public posts")
     @GetMapping("/byUserId/{userId}")
+    @ResponseStatus(HttpStatus.FOUND)
     @ResponseBody
     public List<PostDTO> findAllMyFollowingsAndPublicPosts(@PathVariable @NotNull int userId) {
         return postService.findAllPostsAndMyFollowingsPost(userId).parallelStream().map(post -> {
@@ -72,11 +73,8 @@ public class PostController {
     public PostDTO save(@Valid @RequestBody PostSaveDTO postSaveDTO) {
         // TODO finish
         Post post = postMapper.convertPostSaveDtoToPost(postSaveDTO);
-        System.out.println("\n POST converted: " + post.toString());
 
         Post savedPost = postService.save(post);
-        System.out.println("\n POST saved: " + savedPost.toString());
-        System.out.println("\n getOwner" + savedPost.getOwner().toString());
 
         return postMapper.convertPostToPostDTO(savedPost);
     }
