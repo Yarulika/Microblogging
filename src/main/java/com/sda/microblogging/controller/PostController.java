@@ -29,7 +29,6 @@ public class PostController {
 
     @ApiOperation(value = "Get all public posts", notes = "Get all public posts: isPrivate=false")
     @GetMapping("/allPublic")
-    @ResponseStatus(HttpStatus.FOUND)
     @ResponseBody
     public List<PostDTO> findAllPublicPosts() {
         return postService.findAllPostsBasedOnPrivacy(false).parallelStream().map(post -> {
@@ -42,7 +41,6 @@ public class PostController {
 
     @ApiOperation(value = "Get all my followings and public posts", notes = "Get all my followings and public posts")
     @GetMapping("/byUserId/{userId}")
-    @ResponseStatus(HttpStatus.FOUND)
     @ResponseBody
     public List<PostDTO> findAllMyFollowingsAndPublicPosts(@PathVariable @NotNull int userId) {
         return postService.findAllPostsAndMyFollowingsPost(userId).parallelStream().map(post -> {
@@ -73,9 +71,7 @@ public class PostController {
     public PostDTO save(@Valid @RequestBody PostSaveDTO postSaveDTO) {
         // TODO finish
         Post post = postMapper.convertPostSaveDtoToPost(postSaveDTO);
-
         Post savedPost = postService.save(post);
-
         return postMapper.convertPostToPostDTO(savedPost);
     }
 

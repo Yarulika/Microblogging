@@ -58,7 +58,7 @@ public class PostControllerTest {
                         get("/microblogging/v1/post/allPublic"))
                 .andDo(print());
         result
-                .andExpect(status().isFound())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].*", hasSize(13)))
@@ -149,7 +149,7 @@ public class PostControllerTest {
         mockMvc.perform(
                 get("/microblogging/v1/post/byUserId/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isFound())
+                .andExpect(status().isOk())
                 .andReturn();
     }
 }
