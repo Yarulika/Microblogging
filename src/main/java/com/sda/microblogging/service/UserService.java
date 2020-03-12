@@ -18,6 +18,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -37,6 +40,18 @@ public class UserService implements UserDetailsService {
             throw new UserDetailsFoundException("Person with email: " + user.getEmail() + "already exists");
         }
         return userRepository.save(user);
+    }
+
+    public User updateUserPassword(@NotBlank Integer userId, @NotBlank @Size(min = 1, max = 45) String newPassword) {
+        Optional<User> user = userRepository.findById(userId);
+        if (!user.isPresent()){
+            throw new UserNotFoundException();
+        }
+        else {
+        // TODO after Security:  user.setPassword(passwordEncoder.encode(password));
+            user.get().setPassword(newPassword);
+            return userRepository.save(user.get());
+        }
     }
 
     public Optional<User> findUserByUsername(@NotBlank String username) {

@@ -53,6 +53,10 @@ public class FollowerService {
         }
     }
 
+    public int countFollowersByUserId (Integer userId){
+        return getAllFollowersByUserId(userId).size();
+    }
+
     public List<Follower> getAllFollowingByFollowerId(Integer followerId) {
         Optional<User> follower = userRepository.findById(followerId);
         if (follower.isPresent()){
@@ -62,6 +66,11 @@ public class FollowerService {
             throw new UserNotFoundException();
         }
     }
+
+    public int countFollowingByFollowerId (Integer followerId){
+        return getAllFollowingByFollowerId(followerId).size();
+    }
+
 
     public Optional<Follower> getFollowerByUserIdAndFollowerId(Integer userId, Integer followerId) {
         return followerRepository.findFollowerByUserAndFollower(userId, followerId);

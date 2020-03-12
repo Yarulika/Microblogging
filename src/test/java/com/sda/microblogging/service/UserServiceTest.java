@@ -23,8 +23,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -54,7 +53,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void save_returns_saved_user(){
+    public void save_returns_user_if_his_details_were_not_found(){
         when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(expectedUser);
@@ -83,6 +82,24 @@ public class UserServiceTest {
             userService.save(expectedUser);
         });
         assertThat(exception.getMessage()).contains("Person with email", "already exists");
+    }
+
+    @Test
+    public void updateUserPassword_returns_user_if_he_was_found_by_id(){
+        when(userRepository.findById(any())).thenReturn(Optional.of(expectedUser));
+        when(userRepository.save(expectedUser)).thenReturn(expectedUser);
+
+        userService.updateUserPassword(expectedUser.getUserId(), "newPassword");
+        verify(userRepository, times(1)).findById(any());
+    }
+
+    @Test
+    public void updateUserPassword_if_user_not_found_returns_UserNotFoundException(){
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.updateUserPassword(expectedUser.getUserId(), "gg");
+        });
+        assertThat(exception.getMessage()).contains("Given User was not found");
     }
 
     @Test
@@ -169,11 +186,5 @@ public class UserServiceTest {
         when(userRepository.findAllByIsBlocked(false)).thenReturn(testUsers);
         List<User> actualUsers = userService.findAllActiveUsers();
         assertThat(actualUsers).isEqualTo(testUsers);
-    }
-
-    @Test
-    public void saveImage_returns_saved_image_url(){
-        byte[] testImgBytes = "Getting some bytes for image testing".getBytes();
-        assertThat(userService.saveImage(testImgBytes)).isInstanceOfAny(String.class);
     }
 }

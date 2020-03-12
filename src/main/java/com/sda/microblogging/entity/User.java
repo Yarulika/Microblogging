@@ -1,9 +1,6 @@
 package com.sda.microblogging.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +14,9 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
+@Builder
 public class User {
 
     @Id
@@ -67,27 +67,4 @@ public class User {
 
 //    @OneToMany(mappedBy = "id")
 //    private Set<Follower> followers;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return isPrivate() == user.isPrivate() &&
-                isBlocked() == user.isBlocked() &&
-                getUserId().equals(user.getUserId()) &&
-                getUsername().equals(user.getUsername()) &&
-                getPassword().equals(user.getPassword()) &&
-                getEmail().equals(user.getEmail()) &&
-                Objects.equals(getAvatar(), user.getAvatar()) &&
-                Objects.equals(getCreationDate(), user.getCreationDate()) &&
-                Objects.equals(getRole(), user.getRole()) &&
-                Objects.equals(getBlockedUsers(), user.getBlockedUsers()
-                );
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getUserId(), getUsername(), getPassword(), getEmail(), isPrivate(), getAvatar(), isBlocked(), getCreationDate(), getRole(), getBlockedUsers());
-    }
 }

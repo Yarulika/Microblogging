@@ -3,10 +3,7 @@ package com.sda.microblogging.repository;
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,9 +19,11 @@ public class UserRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-    public static User expectedUser;
+    public User expectedUser;
+    public User actualUser;
 
-    public static void initTestData() {
+    @BeforeEach
+    public void initTestData() {
         expectedUser = new User();
         expectedUser.setUsername("name");
         expectedUser.setPassword("password");
@@ -36,28 +35,37 @@ public class UserRepositoryTest {
         Role role = new Role(1, RoleTitle.ADMIN);
         expectedUser.setRole(role);
         expectedUser.setBlockedUsers(null);
+        actualUser = userRepository.save(expectedUser);
+    }
+
+    @AfterEach
+    public void clean(){
+        userRepository.deleteAll();
     }
 
     @Test
     @Order(1)
     public void save_returns_saved_user_with_id() {
-        initTestData();
-        User actualUser = userRepository.save(expectedUser);
-
         assertThat(actualUser.getUserId()).isNotNull();
         assertThat(actualUser.getUsername()).isEqualTo(expectedUser.getUsername());
+        assertThat(actualUser.getPassword()).isEqualTo(expectedUser.getPassword());
+        assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
+        assertThat(actualUser.isPrivate()).isEqualTo(expectedUser.isPrivate());
+        assertThat(actualUser.getAvatar()).isEqualTo(expectedUser.getAvatar());
+        assertThat(actualUser.isBlocked()).isEqualTo(expectedUser.isBlocked());
+        assertThat(actualUser.getCreationDate()).isEqualTo(expectedUser.getCreationDate());
     }
 
     @Test
     @Order(2)
-    public void findByUsername_returns_correct_user() {
+    public void findByUsername_returns_correct_user_with_requested_username() {
         User actualUser = userRepository.findByUsername(expectedUser.getUsername()).get();
         assertThat(actualUser.getUsername()).isEqualTo(expectedUser.getUsername());
     }
 
     @Test
     @Order(3)
-    public void findByEmail_returns_correct_user() {
+    public void findByEmail_returns_correct_user_with_requested_email() {
         User actualUser = userRepository.findByEmail(expectedUser.getEmail()).get();
         assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
     }
@@ -72,15 +80,12 @@ public class UserRepositoryTest {
 
         List<User> activeUsers = userRepository.findAllByIsBlocked(false);
         assertThat(activeUsers.parallelStream().allMatch(User::isBlocked)).isFalse();
-
-        userRepository.delete(userExtra1);
-        userRepository.delete(userExtra2);
     }
 
     @Test
     @Order(5)
     public void delete_deletes_user_correctly() {
         userRepository.delete(expectedUser);
-        assertThat(userRepository.findAll().size()).isZero();
+        assertThat(userRepository.findByUsername(expectedUser.getUsername())).isEmpty();
     }
 }

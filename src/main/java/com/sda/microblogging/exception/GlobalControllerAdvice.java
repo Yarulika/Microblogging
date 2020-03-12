@@ -11,6 +11,16 @@ import java.io.IOException;
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
+    @ExceptionHandler(InvalidEmailOrPasswordException.class)
+    public void handleInvalidEmailOrPasswordException(InvalidEmailOrPasswordException exception, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+    }
+
+    @ExceptionHandler(ParentCommentNotFoundException.class)
+    public void handleParentCommentNotFoundException(ParentCommentNotFoundException exception, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+    }
+
     @ExceptionHandler(PostNotFoundException.class)
     public void handlePostNotFoundException(PostNotFoundException exception, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
