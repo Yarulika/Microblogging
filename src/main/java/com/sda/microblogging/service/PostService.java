@@ -6,6 +6,7 @@ import com.sda.microblogging.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -30,16 +31,14 @@ public class PostService {
         return postRepository.findPostsByOwnerUserId(userId);
     }
 
-    public Post save(Post post) {
-
+    public Post save(@Valid Post post) {
         requireNonNull(post.getContent());//should have a content
 
         if (!post.getContent().trim().isEmpty()){
-            postRepository.save(post);
+            return postRepository.save(post);
         }else {
             throw new RuntimeException("Post should have a content");
         }
-        return new Post();
     }
 
     public List<Post> findByOrderByCreationDate() {
@@ -77,5 +76,7 @@ public class PostService {
 
         //TODO : check if the user is logged in
         return postRepository.findPostsByOwnerUsernameAndOwnerIsPrivate(username,false);
+        //if is login than return this
+//        return postRepository.findPostsByOwnerUsername(username);
     }
 }

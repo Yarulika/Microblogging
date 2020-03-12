@@ -9,6 +9,7 @@ import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.PostMapper;
 import com.sda.microblogging.service.PostLikeService;
 import com.sda.microblogging.service.PostService;
+import com.sda.microblogging.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,12 @@ public class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    PostMapper postMapper;
+
+    @MockBean
+    UserService userService;
+
     @MockBean
     private PostService postService;
 
@@ -48,6 +55,7 @@ public class PostControllerTest {
     public void findAllPublicPosts_returns_collection_and_Found() throws Exception {
         User user = new User(1, "username0", "password0", "email0@mail.com", true, "avatar", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
         Post post = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null,null,null);
+
         Post[] posts = new Post[1];
         posts[0] = post;
 
@@ -67,9 +75,8 @@ public class PostControllerTest {
 
     @SneakyThrows
     @Test
-    public void save_post_returns_CREATED() {
-        User user = new User(1, "username0", "password0", "email0@mail.com", true, "avatar", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-        Post post = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null,null,null);
+    public void save_post_returns_bad_request() {
+        Post post = new Post(1, "post content", false, new User(), Date.valueOf("2020-02-02"), null, null,null,null);
 
         when(postService.save(any(Post.class))).thenReturn(post);
 
@@ -82,11 +89,7 @@ public class PostControllerTest {
                 .andDo(print());
 
         result
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value("1"))
-                .andExpect(jsonPath("$.*").isArray())
-                .andExpect(jsonPath("$.*", hasSize(9)))
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
@@ -127,20 +130,25 @@ public class PostControllerTest {
     @Test
     public void post_share_return_bad_request() throws Exception{
 
-        PostSaveDTO post = new PostSaveDTO();
-        PostMapper postMapper = new PostMapper();
+        Post post = new Post();
+        PostSaveDTO postSaveDTO = new PostSaveDTO();
+        postSaveDTO.setContent("asa");
+        postSaveDTO.setCreationDate(Date.valueOf("2020-01-04"));
+        postSaveDTO.setOwner(1);
+        postSaveDTO.setIsEdited(false);
+        User user= new User();
+        user.setUserId(1);
 
-        post.setOwner(new User());
-        when(postService.save(postMapper.convertDtoToPost(post))).thenReturn(postMapper.convertDtoToPost(post));
+        when(userService.findUserById(1)).thenReturn(java.util.Optional.of(user));
+        post = postMapper.convertPostSaveDTOtoPost(postSaveDTO);
+
 
         mockMvc.perform(
                 post("/microblogging/v1/post/share")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(post)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        verify(postService,times(1)).save(any(Post.class));
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test

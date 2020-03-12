@@ -1,7 +1,10 @@
 package com.sda.microblogging.entity.mapper;
+import com.sda.microblogging.entity.DTO.post.OriginalPostDTO;
 import com.sda.microblogging.entity.DTO.post.PostSaveDTO;
 import com.sda.microblogging.entity.DTO.post.PostDTO;
+import com.sda.microblogging.entity.DTO.post.PostShareDTO;
 import com.sda.microblogging.entity.Post;
+import com.sda.microblogging.service.PostService;
 import com.sda.microblogging.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,16 +12,38 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostMapper {
 
-    public PostDTO convertPostToDTO(Post post){
-        int numberOfPostLikes = 0;
-        if (post.getLikes() != null) {
-            numberOfPostLikes = post.getLikes().size();
+    @Autowired
+    PostService postService;
+    @Autowired
+    UserService userService;
+
+    public Post convertPostSaveDTOtoPost(PostSaveDTO postSaveDTO){
+        Post post = new Post();
+        Post originalPost = null;
+
+        if(postSaveDTO.getOriginalPost() != null){
+            originalPost = postService.findPostById(postSaveDTO.getOriginalPost()).get();
         }
 
-        int numberOfComments = 0;
-        if (post.getComments() != null) {
-            numberOfComments = post.getComments().size();
+        post.setOriginalPost(originalPost);
+        post.setCreationDate(postSaveDTO.getCreationDate());
+        post.setOwner(userService.findUserById(postSaveDTO.getOwner()).get());
+        post.setContent(postSaveDTO.getContent());
+        post.setIsEdited(false);
+        return post;
+    }
+
+    public PostDTO convertPostToPostSharedDTO(Post post){
+        PostDTO postShareDTO;
+        if (post.getOriginalPost()!=null)
+               postShareDTO = buildPostShareDTO(post);
+        else{
+            postShareDTO = buildPostDTO(post);
         }
+        return postShareDTO;
+    }
+
+    private PostDTO buildPostDTO(Post post){
 
         return PostDTO.builder()
                 .username(post.getOwner().getUsername())
@@ -26,24 +51,33 @@ public class PostMapper {
                 .isUserPrivate(post.getOwner().isPrivate())
                 .userRole(post.getOwner().getRole().getTitle())
                 .avatar(post.getOwner().getAvatar())
-                .numberOfPostLikes(numberOfPostLikes)
+                .numberOfPostLikes(numberOfPostLikes(post))
                 .postId(post.getId())
                 .content(post.getContent())
                 .isPostEdited(post.getIsEdited())
                 .postCreatedDate(post.getCreationDate())
-                .numberOfComments(numberOfComments)
+                .numberOfComments(numberOfComments(post))
                 .build();
     }
 
-    public Post convertDtoToPost(PostSaveDTO postSaveDTO){
-        Post post = new Post();
+    private PostShareDTO buildPostShareDTO(Post post){
+        //todo need refactoring
+        PostShareDTO postShareDTO = new PostShareDTO(post.getOwner().getUsername(),post.getOwner().getUserId(),post.getOwner().isPrivate(),post.getOwner().getRole().getTitle(),post.getOwner().getAvatar(),0,post.getId(),post.getContent(),post.getIsEdited(),post.getCreationDate(),numberOfPostLikes(post),numberOfComments(post),false);
+        OriginalPostDTO originalPostDTO = OriginalPostDTO.builder()
+                .username(post.getOriginalPost().getOwner().getUsername())
+                .userId(post.getOriginalPost().getOwner().getUserId())
+                .avatar(post.getOriginalPost().getOwner().getAvatar())
+                .content(post.getOriginalPost().getContent())
+                .postCreatedDate(post.getOriginalPost().getCreationDate())
+                .build();
+        postShareDTO.setOriginalPostDTO(originalPostDTO);
+        return postShareDTO;
+    }
+    private int numberOfPostLikes(Post post){
+        return post.getLikes()==null? 0:post.getLikes().size();
+    }
 
-        post.setOriginalPost(postSaveDTO.getOriginalPost());
-        post.setCreationDate(postSaveDTO.getCreationDate());
-        post.setOwner(postSaveDTO.getOwner());
-        post.setContent(postSaveDTO.getContent());
-        post.setIsEdited(false);
-        post.setOriginalPost(postSaveDTO.getOriginalPost());
-        return post;
+    private int numberOfComments(Post post) {
+        return post.getComments()==null? 0:post.getComments().size();
     }
 }

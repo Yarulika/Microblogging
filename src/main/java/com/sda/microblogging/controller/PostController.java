@@ -3,6 +3,7 @@ package com.sda.microblogging.controller;
 import com.sda.microblogging.entity.*;
 import com.sda.microblogging.entity.DTO.post.PostSaveDTO;
 import com.sda.microblogging.entity.DTO.post.PostDTO;
+import com.sda.microblogging.entity.DTO.post.PostShareDTO;
 import com.sda.microblogging.entity.mapper.PostMapper;
 import com.sda.microblogging.service.PostLikeService;
 import com.sda.microblogging.service.PostService;
@@ -33,7 +34,7 @@ public class PostController {
     @ResponseBody
     public List<PostDTO> findAllPublicPosts() {
         return postService.findAllPostsBasedOnPrivacy(false).parallelStream().map(post -> {
-             PostDTO postDTO = postMapper.convertPostToDTO(post);
+             PostDTO postDTO = postMapper.convertPostToPostSharedDTO(post);
              postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
              postDTO.setPostLiked(postLikeService.checkIfThePostIsLiked(post.getOwner(),post));
              return postDTO;
@@ -45,7 +46,7 @@ public class PostController {
     @ResponseBody
     public List<PostDTO> findAllMyFollowingsAndPublicPosts(@PathVariable @NotNull int userId) {
         return postService.findAllPostsAndMyFollowingsPost(userId).parallelStream().map(post -> {
-            PostDTO postDTO = postMapper.convertPostToDTO(post);
+            PostDTO postDTO = postMapper.convertPostToPostSharedDTO(post);
             postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
             postDTO.setPostLiked(postLikeService.checkIfThePostIsLiked(post.getOwner(),post));
             return postDTO;
@@ -58,7 +59,7 @@ public class PostController {
     public List<PostDTO> findPostsByUsername(@Valid @NotNull @PathVariable String username) {
 
         return postService.findPostsByOwnerUsername(username).parallelStream().map(post -> {
-            PostDTO postDTO = postMapper.convertPostToDTO(post);
+            PostDTO postDTO = postMapper.convertPostToPostSharedDTO(post);
             postDTO.setNumberOfPostShares(postService.findNumberOfSharesOfPost(post.getId()));
             postDTO.setPostLiked(postLikeService.checkIfThePostIsLiked(post.getOwner(), post));
             return postDTO;
@@ -69,15 +70,20 @@ public class PostController {
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Post save(@Valid @RequestBody PostSaveDTO postSaveDTO) {
-        return postService.save(postMapper.convertDtoToPost(postSaveDTO));
+    public PostDTO save(@Valid @RequestBody PostSaveDTO postSaveDTO) {
+        Post post = postMapper.convertPostSaveDTOtoPost(postSaveDTO);
+        //steps to understand, first we need to convert from postSaveDto to post, than to a postDTO or postSharedDTO
+//        Post post1 = postService.save(post);
+//        PostDTO postDTO = postMapper.convertPostToPostSharedDTO(post1);
+
+        return postMapper.convertPostToPostSharedDTO(postService.save(post));
     }
 
     @ApiOperation(value = "Share post", notes = "Share post")
     @PostMapping("/share")
     @ResponseBody
     public PostDTO sharePost(@Valid @RequestBody PostSaveDTO postSaveDTO) {
-        return postMapper.convertPostToDTO(postService.save(postMapper.convertDtoToPost(postSaveDTO)));
+        return postMapper.convertPostToPostSharedDTO(postService.save(postMapper.convertPostSaveDTOtoPost(postSaveDTO)));
     }
 
     @ApiOperation(value = "Like post", notes = "Create post like")
