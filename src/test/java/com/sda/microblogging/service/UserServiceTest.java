@@ -23,7 +23,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -187,11 +186,5 @@ public class UserServiceTest {
         when(userRepository.findAllByIsBlocked(false)).thenReturn(testUsers);
         List<User> actualUsers = userService.findAllActiveUsers();
         assertThat(actualUsers).isEqualTo(testUsers);
-    }
-
-    @Test
-    public void saveImage_returns_saved_image_url(){
-        byte[] testImgBytes = "Getting some bytes for image testing".getBytes();
-        assertThat(userService.saveImage(testImgBytes)).isInstanceOfAny(String.class);
     }
 }
