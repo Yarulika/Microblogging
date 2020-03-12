@@ -69,11 +69,4 @@ public class UserService {
     public List<User> findAllActiveUsers(){
         return userRepository.findAllByIsBlocked(false);
     }
-
-    public String saveImage(byte[] imageData) {
-        String imgUrl = new String();
-        // TODO hardcoded at the moment: will implement later saving img on hard disc or some media server
-        imgUrl = "//https://cdn.pixabay.com/photo/2018/05/31/15/06/not-hear-3444212__340.jpg";
-        return imgUrl;
-    }
 }
