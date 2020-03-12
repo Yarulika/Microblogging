@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -80,5 +81,27 @@ public class CommentController {
                     return commentDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @ApiOperation(value = "Find comments for post, nested", notes = "Find all comments for given post id, nested")
+    @GetMapping(path = "/post/{postId}/commentNested")
+    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseBody
+    public Iterable<CommentDTO> findNestedCommentsByPostId(@PathVariable @NotBlank int postId){
+        List<CommentDTO> comments = commentService.findCommentsByPostId(postId)
+                .parallelStream()
+                .map(comment -> {
+                    CommentDTO commentDTO = commentDtoMapper.toCommentDto(
+                            comment,
+                            commentLikeService.getNumberOfCommentLikes(comment.getId()),
+                            commentService.findNumberOfRepliedComments(comment.getId()));
+                    return commentDTO;
+                })
+                .collect(Collectors.toList());
+
+
+
+        return null;
+        // <<==
     }
 }

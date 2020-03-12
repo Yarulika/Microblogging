@@ -3,6 +3,7 @@ package com.sda.microblogging.entity.DTO.comment;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,4 +20,5 @@ public class CommentDTO {
     private Integer commentParentId;
     private int numberOfCommentLikes;
     private int numberOfCommentShares;
+    private List<CommentDTO> subComments;
 }

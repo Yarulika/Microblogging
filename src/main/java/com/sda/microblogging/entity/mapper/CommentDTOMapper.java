@@ -24,6 +24,7 @@ public class CommentDTOMapper {
                 .commentParentId(commentParentID)
                 .numberOfCommentLikes(numberCommentLikes)
                 .numberOfCommentShares(numberCommentShares)
+//                .subComments();
                 .build();
     }
 
