@@ -3,10 +3,13 @@ package com.sda.microblogging.controller;
 import com.sda.microblogging.entity.Comment;
 import com.sda.microblogging.entity.CommentLike;
 import com.sda.microblogging.entity.DTO.comment.CommentDTO;
+import com.sda.microblogging.entity.DTO.comment.CommentNewInputDTO;
 import com.sda.microblogging.entity.DTO.comment.CommentSavedDTO;
 import com.sda.microblogging.entity.mapper.CommentDTOMapper;
 import com.sda.microblogging.service.CommentLikeService;
 import com.sda.microblogging.service.CommentService;
+import com.sda.microblogging.service.PostService;
+import com.sda.microblogging.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,18 +27,38 @@ public class CommentController {
     private CommentService commentService;
     private CommentLikeService commentLikeService;
     private CommentDTOMapper commentDtoMapper;
+    private PostService postService;
+    private UserService userService;
 
     @Autowired
-    public CommentController(CommentService commentService, CommentLikeService commentLikeService, CommentDTOMapper commentDtoMapper){
+    public CommentController(
+                CommentService commentService,
+                CommentLikeService commentLikeService,
+                CommentDTOMapper commentDtoMapper,
+                PostService postService,
+                UserService userService){
         this.commentService = commentService;
         this.commentLikeService = commentLikeService;
         this.commentDtoMapper = commentDtoMapper;
+        this.postService = postService;
+        this.userService = userService;
     }
 
     @ApiOperation(value = "Add comment", notes = "Add new comment")
     @PostMapping(path = "/comment")
     @ResponseBody
-    public ResponseEntity<CommentSavedDTO> saveNew(@Valid @RequestBody Comment comment){
+    public ResponseEntity<CommentSavedDTO> saveNew(@Valid @RequestBody CommentNewInputDTO commentNewInputDTO){
+        Comment commentParent = null;
+        if ((commentNewInputDTO.getCommentParentId() != null) && (commentNewInputDTO.getCommentParentId() != 0)) {
+            commentParent = commentService.findCommentById(commentNewInputDTO.getCommentParentId()).get();
+        }
+        Comment comment = commentDtoMapper.fromCommentNewInputDTOtoComment(
+                commentNewInputDTO,
+                postService.findPostById(commentNewInputDTO.getPostId()).get(),
+                userService.findUserById(commentNewInputDTO.getUserOwnerId()).get(),
+                commentParent
+        );
+
         Comment commentSaved = commentService.save(comment);
         CommentSavedDTO commentSavedDTO = commentDtoMapper.toCommentSavedDto(commentSaved);
         return new ResponseEntity<>(commentSavedDTO, HttpStatus.CREATED);
