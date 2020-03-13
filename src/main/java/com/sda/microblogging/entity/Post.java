@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
 import java.sql.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "posts")
@@ -48,6 +49,12 @@ public class Post implements Comparable<Post>{
             inverseJoinColumns = {@JoinColumn(name = "tag_id")}
     )
     private Set<Tag> tags;
+
+    @OneToMany(mappedBy = "post")
+    private List<PostLike> likes;
+
+    @OneToMany(mappedBy = "post")
+    private  List<Comment> comments;
 
     @Override
     public int compareTo(Post post) {

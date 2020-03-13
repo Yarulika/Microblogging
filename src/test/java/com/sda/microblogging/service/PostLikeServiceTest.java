@@ -69,4 +69,11 @@ public class PostLikeServiceTest {
 
         assertThat(postLikeService.findPostLikesAndUserByPost(postLike.getPost())).isEqualTo(listPost);
     }
+
+    @Test
+    public void get_post_is_liked_return_true(){
+        when(postLikeRepository.findByPostAndUser(postLike.getPost(),postLike.getUser())).thenReturn(java.util.Optional.ofNullable(postLike));
+
+        assertThat(postLikeService.checkIfThePostIsLiked(postLike.getUser(),postLike.getPost())).isEqualTo(true);
+    }
 }
