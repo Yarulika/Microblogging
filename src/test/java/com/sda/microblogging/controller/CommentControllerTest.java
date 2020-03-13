@@ -3,8 +3,11 @@ package com.sda.microblogging.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.*;
+import com.sda.microblogging.entity.DTO.comment.CommentNewInputDTO;
 import com.sda.microblogging.service.CommentLikeService;
 import com.sda.microblogging.service.CommentService;
+import com.sda.microblogging.service.PostService;
+import com.sda.microblogging.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.sql.Date;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +45,12 @@ public class CommentControllerTest {
     private CommentService commentService;
 
     @MockBean
+    private PostService postService;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
     private CommentLikeService commentLikeService;
 
     public User user;
@@ -51,6 +61,7 @@ public class CommentControllerTest {
     public Comment comment4;
     public Comment[] comments;
     public CommentLike commentLike;
+    public CommentNewInputDTO commentNewInputDTO;
 
     @BeforeEach
     public void initTestData(){
@@ -66,24 +77,27 @@ public class CommentControllerTest {
         comments[2] = comment3;
         comments[3] = comment4;
         commentLike = new CommentLike(1, comment1, user, Date.valueOf("2020-02-02"));
+        commentNewInputDTO = new CommentNewInputDTO("comments content1", post.getId(), user.getUserId(), comment1.getId());
     }
 
     @Test
-    public void saveNew_returns_saved_comment() throws Exception {
+    public void saveNew_CommentNewInputDTO_returns_CommentSavedDTO_with_Created_status() throws Exception {
+        when(commentService.findCommentById(anyInt())).thenReturn(Optional.of(comment1));
+        when(postService.findPostById(anyInt())).thenReturn(Optional.of(post));
+        when(userService.findUserById(anyInt())).thenReturn(Optional.of(user));
         when(commentService.save(any(Comment.class))).thenReturn(comment1);
+
         ResultActions result = mockMvc
                 .perform(
                         post("/microblogging/v1/comment")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(comment1))
+                            .content(objectMapper.writeValueAsString(commentNewInputDTO))
                 )
                 .andDo(print());
 
         result
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value("1"))
-                .andExpect(jsonPath("content").value("comments content1"))
                 .andExpect(jsonPath("$.*").isArray())
                 .andExpect(jsonPath("$.*", hasSize(4)))
                 .andReturn();
