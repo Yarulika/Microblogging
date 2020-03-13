@@ -1,10 +1,12 @@
 package com.sda.microblogging.service;
 
 import com.sda.microblogging.entity.Post;
+import com.sda.microblogging.entity.mapper.PostMapper;
 import com.sda.microblogging.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,24 +20,25 @@ public class PostService {
 
     @Autowired
     PostRepository postRepository;
+    @Autowired
+    PostMapper postMapper;
 
     public List<Post> findAll() {
-        return postRepository.findAll();
+        return (List<Post>) postRepository.findAll();
     }
 
     public List<Post> findPostsByOwner(int userId) {
-        return postRepository.findPostsByOwner(userId);
+        return postRepository.findPostsByOwnerUserId(userId);
     }
 
-    public Post save(Post post) {
-
+    public Post save(@Valid Post post) {
         requireNonNull(post.getContent());//should have a content
-        if (post.getContent().trim().isEmpty()){
-            postRepository.save(post);
+
+        if (!post.getContent().trim().isEmpty()){
+            return postRepository.save(post);
         }else {
             throw new RuntimeException("Post should have a content");
         }
-        return postRepository.save(post);
     }
 
     public List<Post> findByOrderByCreationDate() {
@@ -58,5 +61,22 @@ public class PostService {
         }else{
             return post;
         }
+    }
+
+    public List<Post> findAllPostsBasedOnPrivacy(boolean isPrivate) {
+        return postRepository.findTop10ByOwnerIsPrivateOrderByCreationDateDesc(isPrivate);
+    }
+
+    public List<Post> findAllPostsAndMyFollowingsPost(int userId){
+
+        return postRepository.findUserPostAndFollowingUserPost(userId,userId);
+    }
+
+    public List<Post> findPostsByOwnerUsername(String username) {
+
+        //TODO : check if the user is logged in
+        return postRepository.findPostsByOwnerUsernameAndOwnerIsPrivate(username,false);
+        //if is login than return this
+//        return postRepository.findPostsByOwnerUsername(username);
     }
 }

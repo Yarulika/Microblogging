@@ -66,6 +66,16 @@ public class PostServiceTest {
     }
 
     @Test
+    public void get_all_public_posts() {
+
+        when(postRepository.findTop10ByOwnerIsPrivateOrderByCreationDateDesc(false)).thenReturn(posts);
+        List<Post> actualPost=postService.findAllPostsBasedOnPrivacy(false);
+
+        assertEquals(false,actualPost.get(1).getOwner().isPrivate());
+        verify(postRepository,times(1)).findTop10ByOwnerIsPrivateOrderByCreationDateDesc(false);
+    }
+
+    @Test
     public void get_all_posts_sorted_by_date(){
 
         when(postRepository.findByOrderByCreationDate()).thenReturn(posts);
@@ -78,7 +88,7 @@ public class PostServiceTest {
 
     @Test
     public void get_posts_by_userId_return_username() {
-        when(postRepository.findPostsByOwner(1)).thenReturn(posts);
+        when(postRepository.findPostsByOwnerUserId(1)).thenReturn(posts);
 
         List<Post> postList = postService.findPostsByOwner(1);
 

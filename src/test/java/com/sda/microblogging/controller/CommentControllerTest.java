@@ -55,7 +55,7 @@ public class CommentControllerTest {
     @BeforeEach
     public void initTestData(){
         user = new User(1, "username0", "password0", "email0@mail.com", true, "avatar", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-        post = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null);
+        post = new Post(1, "post content", false, user, Date.valueOf("2020-02-02"), null, null,null,null);
         comment1 = new Comment(1, "comments content1", post, user, Date.valueOf("2020-02-02"), null);
         comment2 = new Comment(2, "comments content2", post, user, Date.valueOf("2020-02-02"), null);
         comment3 = new Comment(3, "comments content3", post, user, Date.valueOf("2020-02-02"), comment2);

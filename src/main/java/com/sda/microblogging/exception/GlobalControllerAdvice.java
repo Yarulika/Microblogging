@@ -35,4 +35,9 @@ public class GlobalControllerAdvice {
     public void handleUserNotFoundException(UserNotFoundException exception, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
     }
+
+    @ExceptionHandler
+    public void handlePostContentNotFoundException(PostContentNotFoundException exception,HttpServletResponse response)throws  IOException{
+        response.sendError(HttpStatus.BAD_REQUEST.value(),exception.getMessage());
+    }
 }
