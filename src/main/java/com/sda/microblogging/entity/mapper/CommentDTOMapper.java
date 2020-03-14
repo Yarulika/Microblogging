@@ -22,7 +22,7 @@ import java.sql.Date;
 @Component
 public class CommentDTOMapper {
 
-    public CommentDTO toCommentDto(Comment comment, int numberCommentLikes, int numberCommentShares){
+    public CommentDTO toCommentDto(Comment comment, int numberCommentLikes, int numberCommentShares, boolean ifCommentLiked){
         Integer commentParentID = null;
         if (comment.getCommentParent() != null) {
             commentParentID = comment.getCommentParent().getId();
@@ -38,6 +38,7 @@ public class CommentDTOMapper {
                 .commentParentId(commentParentID)
                 .numberOfCommentLikes(numberCommentLikes)
                 .numberOfCommentShares(numberCommentShares)
+                .isCommentLiked(ifCommentLiked)
                 .build();
     }
 

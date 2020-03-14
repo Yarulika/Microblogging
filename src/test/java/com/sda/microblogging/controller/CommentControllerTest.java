@@ -120,9 +120,11 @@ public class CommentControllerTest {
     @Test
     public void findCommentsByPostId_returns_collection_status_isFound() throws Exception{
         when(commentService.findCommentsByPostId(anyInt())).thenReturn(Arrays.asList(comments));
+        when(userService.findUserById(anyInt())).thenReturn(Optional.of(user));
+        when(commentLikeService.checkIfCommentIsLiked(any(Comment.class), any(User.class))).thenReturn(true);
         ResultActions result = mockMvc
                 .perform(
-                    get("/microblogging/v1/post/1/comment"))
+                    get("/microblogging/v1/post/1/comment?requestedUserId=1"))
                 .andDo(print());
         result
                 .andExpect(status().isOk())
@@ -137,9 +139,12 @@ public class CommentControllerTest {
     @Test
     public void findAllSubComments_for_comment_returns_collection_status_isFound() throws Exception{
         when(commentService.findCommentsByCommentParentId(anyInt())).thenReturn(Arrays.asList(comments));
+        when(userService.findUserById(anyInt())).thenReturn(Optional.of(user));
+        when(commentLikeService.checkIfCommentIsLiked(any(Comment.class), any(User.class))).thenReturn(true);
+
         ResultActions results = mockMvc
                 .perform(
-                    get("/microblogging/v1/comment/2"))
+                    get("/microblogging/v1/comment/2?requestedUserId=1"))
                 .andDo(print());
         results
                 .andExpect(status().isOk())

@@ -2,6 +2,7 @@ package com.sda.microblogging.service;
 
 import com.sda.microblogging.entity.Comment;
 import com.sda.microblogging.entity.CommentLike;
+import com.sda.microblogging.entity.Post;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.repository.CommentLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,9 @@ public class CommentLikeService {
 
     public int getNumberOfCommentLikes(@NotNull int commentId) {
         return commentLikeRepository.countByCommentId(commentId);
+    }
+
+    public boolean checkIfCommentIsLiked(Comment comment, User user) {
+        return commentLikeRepository.findByCommentAndUser(comment, user).isPresent();
     }
 }
