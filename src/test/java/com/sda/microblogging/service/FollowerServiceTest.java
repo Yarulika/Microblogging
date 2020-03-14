@@ -1,5 +1,6 @@
 package com.sda.microblogging.service;
 
+import com.sda.microblogging.entity.DTO.follower.FollowDTO;
 import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
@@ -83,9 +84,14 @@ class FollowerServiceTest {
     @Test
     public void followUser_should_return_saved_follower_and_followed_users() {
         when(followerRepository.save(any(Follower.class))).thenReturn(expectedFollowerDetail);
-        when(followerRepository.findFollowerByUserAndFollower(anyInt(), anyInt())).thenReturn(Optional.empty());
+        when(followerRepository.findFollowerByUserUserIdAndFollowerUserId(anyInt(), anyInt())).thenReturn(Optional.empty());
+        when(userRepository.findById(anyInt())).thenReturn(Optional.ofNullable(user));
 
-        Follower actualFollowerDetail = followerService.followUser(expectedFollowerDetail);
+        FollowDTO followDTO = new FollowDTO();
+        followDTO.setFollowingId(1);
+        followDTO.setUserId(1);
+        followDTO.setFollowingDate(Date.valueOf("2020-01-01"));
+        Follower actualFollowerDetail = followerService.followUser(followDTO);
 
         assertEquals(expectedFollowerDetail.getFollower().getUserId(), actualFollowerDetail.getFollower().getUserId());
         assertEquals(expectedFollowerDetail.getUser().getUserId(), actualFollowerDetail.getUser().getUserId());
@@ -96,7 +102,7 @@ class FollowerServiceTest {
         Integer userId = user.getUserId();
         Integer followerId = followerUser.getUserId();
 
-        when(followerRepository.findFollowerByUserAndFollower(anyInt(), anyInt())).thenReturn(Optional.of(expectedFollowerDetail));
+        when(followerRepository.findFollowerByUserUserIdAndFollowerUserId(anyInt(), anyInt())).thenReturn(Optional.of(expectedFollowerDetail));
         Optional<Follower> specificFollower = followerService.getFollowerByUserIdAndFollowerId(userId, followerId);
 
         assertThat(specificFollower).containsSame(expectedFollowerDetail);
@@ -128,22 +134,33 @@ class FollowerServiceTest {
 
     @Test
     public void unFollowUser_with_valid_userAndFollowerId_should_remove_following() {
-        Integer followerId = followerUser.getUserId();
-        Integer userId = user.getUserId();
 
-        when(followerRepository.findFollowerByUserAndFollower(userId, followerId)).thenReturn(Optional.of(expectedFollowerDetail));
+        when(followerRepository.findFollowerByUserUserIdAndFollowerUserId(anyInt(),anyInt())).thenReturn(Optional.ofNullable(expectedFollowerDetail));
 
-        followerService.unFollowUser(userId, followerId);
-        verify(followerRepository, times(1)).deleteByUserAndFollower(userId, followerId);
+//        when(userRepository.findById(anyInt())).thenReturn(Optional.ofNullable(user));
+
+        followerService.unFollowUser(1, 2);
+        verify(followerRepository, times(1)).deleteByUserUserIdAndFollowerUserId(2,1);
     }
 
     @Test
     public void followUser_if_user_is_already_followed_throws_exception() {
-        when(followerRepository.findFollowerByUserAndFollower(anyInt(), anyInt())).thenReturn(Optional.of(expectedFollowerDetail));
+        FollowDTO followDTO = new FollowDTO();
+        followDTO.setFollowingId(1);
+        followDTO.setUserId(2);
+        followDTO.setFollowingDate(Date.valueOf("2020-01-01"));
+
+        Follower follower = new Follower();
+        follower.setUser(user);
+        follower.setFollower(followerUser);
+        follower.setFollowingDate(followDTO.getFollowingDate());
+
+        when(followerRepository.findFollowerByUserUserIdAndFollowerUserId(anyInt(),anyInt())).thenReturn(Optional.of(expectedFollowerDetail));
+        when(userRepository.findById(anyInt())).thenReturn(Optional.ofNullable(user));
 
         Exception exception = Assertions.assertThrows(Exception.class,
                 () -> {
-                    followerService.followUser(expectedFollowerDetail);
+                    followerService.followUser(followDTO);
                 });
         assertEquals("User already followed", exception.getMessage());
     }
@@ -153,7 +170,7 @@ class FollowerServiceTest {
         Integer userId = user.getUserId();
         Integer followerId = followerUser.getUserId();
 
-        when(followerRepository.findFollowerByUserAndFollower(anyInt(), anyInt())).thenReturn(Optional.empty());
+        when(followerRepository.findFollowerByUserUserIdAndFollowerUserId(anyInt(), anyInt())).thenReturn(Optional.empty());
 
         Exception exception = Assertions.assertThrows(Exception.class,
                 () -> {

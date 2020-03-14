@@ -12,7 +12,7 @@ import java.sql.Date;
 public class FollowerDTO {
     private Integer id;
     private Integer followerId;
-    private String followerUsername;
-    private String followerAvatar;
-    private Date followingDate;
+    private String username;
+    private String avatar;
+    private Date date;
 }
