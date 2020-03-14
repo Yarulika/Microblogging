@@ -125,7 +125,7 @@ public class CommentControllerTest {
                     get("/microblogging/v1/post/1/comment"))
                 .andDo(print());
         result
-                .andExpect(status().isFound())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.*").isArray())
                 .andExpect(jsonPath("$.*", hasSize(4)))
@@ -142,7 +142,7 @@ public class CommentControllerTest {
                     get("/microblogging/v1/comment/2"))
                 .andDo(print());
         results
-                .andExpect(status().isFound())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.*").isArray())
                 .andExpect(jsonPath("$.*",hasSize(4)))
