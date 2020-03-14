@@ -1,5 +1,6 @@
 package com.sda.microblogging.service;
 
+import com.sda.microblogging.entity.DTO.follower.FollowDTO;
 import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.exception.UserNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +27,14 @@ public class FollowerService {
         this.followerRepository = followerRepository;
     }
 
-    public Follower followUser(@Valid @NotNull Follower newFollower) {
-        Integer userId = newFollower.getUser().getUserId();
-        Integer followerId = newFollower.getFollower().getUserId();
+    public Follower followUser(@Valid @NotNull FollowDTO followDTO) {
+        Follower newFollower = new Follower();
+        newFollower.setFollower(userRepository.findById(followDTO.getUserId()).get());
+        newFollower.setUser(userRepository.findById(followDTO.getFollowingId()).get());
 
-        if (getFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
+        newFollower.setFollowingDate(followDTO.getFollowingDate());
+
+        if (followerRepository.findFollowerByUserUserIdAndFollowerUserId(followDTO.getFollowingId(),followDTO.getUserId()).isPresent()) {
             throw new RuntimeException("User already followed");
         }
 
@@ -37,11 +42,12 @@ public class FollowerService {
     }
 
     public void unFollowUser(Integer userId, Integer followerId) {
-        if (!getFollowerByUserIdAndFollowerId(userId, followerId).isPresent()) {
+
+        if (!followerRepository.findFollowerByUserUserIdAndFollowerUserId(followerId, userId).isPresent()) {
             throw new RuntimeException("User has been already unfollowed");
         }
 
-        followerRepository.deleteByUserAndFollower(userId, followerId);
+        followerRepository.deleteByUserUserIdAndFollowerUserId(followerId, userId);
     }
 
     public List<Follower> getAllFollowersByUserId(Integer userId) {
@@ -73,6 +79,6 @@ public class FollowerService {
 
 
     public Optional<Follower> getFollowerByUserIdAndFollowerId(Integer userId, Integer followerId) {
-        return followerRepository.findFollowerByUserAndFollower(userId, followerId);
+        return followerRepository.findFollowerByUserUserIdAndFollowerUserId(userId, followerId);
     }
 }
