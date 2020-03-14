@@ -75,14 +75,22 @@ public class CommentController {
     @GetMapping(path = "/post/{postId}/comment")
     @ResponseStatus(HttpStatus.FOUND)
     @ResponseBody
-    public Iterable<CommentDTO> findCommentsByPostId(@PathVariable @NotBlank int postId){
+    public Iterable<CommentDTO> findCommentsByPostId(@NotBlank @PathVariable int postId, @RequestParam Integer requestedUserId){
         return commentService.findCommentsByPostId(postId)
                 .parallelStream()
                 .map(comment -> {
+                    // requestedUserId: temporary before security
+                    boolean ifCommentLiked = false;
+                    if ((requestedUserId != null) && (requestedUserId != 0)){
+                        ifCommentLiked = commentLikeService.checkIfCommentIsLiked(comment, userService.findUserById(requestedUserId).get());
+                    }
+
                     CommentDTO commentDTO = commentDtoMapper.toCommentDto(
                             comment,
                             commentLikeService.getNumberOfCommentLikes(comment.getId()),
-                            commentService.findNumberOfRepliedComments(comment.getId()));
+                            commentService.findNumberOfRepliedComments(comment.getId()),
+                            ifCommentLiked
+                    );
                     return commentDTO;
                 })
                 .collect(Collectors.toList());
@@ -92,14 +100,22 @@ public class CommentController {
     @GetMapping(path = "/comment/{commentParentId}")
     @ResponseStatus(HttpStatus.FOUND)
     @ResponseBody
-    public Iterable<CommentDTO> findCommentsByCommentParentId(@PathVariable @NotBlank int commentParentId){
+    public Iterable<CommentDTO> findCommentsByCommentParentId(@PathVariable @NotBlank int commentParentId, @RequestParam Integer requestedUserId){
         return commentService.findCommentsByCommentParentId(commentParentId)
                 .parallelStream()
                 .map(comment -> {
+                    // requestedUserId: temporary before security
+                    boolean ifCommentLiked = false;
+                    if ((requestedUserId != null) && (requestedUserId != 0)){
+                        ifCommentLiked = commentLikeService.checkIfCommentIsLiked(comment, userService.findUserById(requestedUserId).get());
+                    }
+
                     CommentDTO commentDTO = commentDtoMapper.toCommentDto(
                             comment,
                             commentLikeService.getNumberOfCommentLikes(comment.getId()),
-                            commentService.findNumberOfRepliedComments(comment.getId()));
+                            commentService.findNumberOfRepliedComments(comment.getId()),
+                            commentLikeService.checkIfCommentIsLiked(comment, userService.findUserById(requestedUserId).get())
+                    );
                     return commentDTO;
                 })
                 .collect(Collectors.toList());

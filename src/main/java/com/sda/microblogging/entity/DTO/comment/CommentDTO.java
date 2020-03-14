@@ -19,4 +19,5 @@ public class CommentDTO {
     private Integer commentParentId;
     private int numberOfCommentLikes;
     private int numberOfCommentShares;
+    private boolean isCommentLiked = false;
 }
