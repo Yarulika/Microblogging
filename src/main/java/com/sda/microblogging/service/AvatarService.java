@@ -30,14 +30,16 @@ public class AvatarService {
             throw new UserNotFoundException();
         }  {
             FileOutputStream fos = null;
-            String imgPath = "src/main/resources/static/avatar/" + user.get().getUsername() + ".img";
+            String imgPath = "src/main/resources/static/avatar/" + user.get().getUsername() + ".jpg";
+            String imgPathForShare = "/avatar/" + user.get().getUsername() + ".jpg";
+
             try {
                 fos = new FileOutputStream(new File(imgPath));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 baos.write(imageData);
                 baos.writeTo(fos);
 
-                user.get().setAvatar(imgPath);
+                user.get().setAvatar(imgPathForShare);
                 userRepository.save(user.get());
                 return user.get();
 
