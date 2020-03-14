@@ -71,10 +71,10 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<FollowerDTO> findAllFollowingByFollowerUsername(@PathVariable @NotBlank String username) {
-        int id = userService.findUserByUsername(username).get().getUserId();
-        return followerService.getAllFollowingByFollowerId(id)
+
+        return followerService.getAllFollowingByFollowerUsername(username)
                 .parallelStream()
-                .map(follower -> followerDTOMapper.toFollowerDTO(follower))
+                .map(follower -> followerDTOMapper.convertFollowerForFollowingDTO(follower))
                 .collect(Collectors.toList());
     }
 

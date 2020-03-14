@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,5 +81,9 @@ public class FollowerService {
 
     public Optional<Follower> getFollowerByUserIdAndFollowerId(Integer userId, Integer followerId) {
         return followerRepository.findFollowerByUserUserIdAndFollowerUserId(userId, followerId);
+    }
+
+    public List<Follower> getAllFollowingByFollowerUsername(String username) {
+        return followerRepository.findFollowerByFollowerUsername(username);
     }
 }
