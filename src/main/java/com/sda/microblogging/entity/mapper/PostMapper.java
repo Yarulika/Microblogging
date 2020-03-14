@@ -64,6 +64,7 @@ public class PostMapper {
         //todo need refactoring
         PostShareDTO postShareDTO = new PostShareDTO(post.getOwner().getUsername(),post.getOwner().getUserId(),post.getOwner().isPrivate(),post.getOwner().getRole().getTitle(),post.getOwner().getAvatar(),0,post.getId(),post.getContent(),post.getIsEdited(),post.getCreationDate(),numberOfPostLikes(post),numberOfComments(post),false);
         OriginalPostDTO originalPostDTO = OriginalPostDTO.builder()
+                .postID(post.getId())
                 .username(post.getOriginalPost().getOwner().getUsername())
                 .userId(post.getOriginalPost().getOwner().getUserId())
                 .avatar(post.getOriginalPost().getOwner().getAvatar())
