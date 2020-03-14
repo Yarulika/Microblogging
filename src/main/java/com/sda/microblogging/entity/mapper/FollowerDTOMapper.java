@@ -26,4 +26,15 @@ public class FollowerDTOMapper {
                 .date(follower.getFollowingDate())
                 .build();
     }
+
+    public FollowerDTO convertFollowerForFollowingDTO(Follower follower) {
+
+        return FollowerDTO.builder()
+                .id(follower.getId())
+                .followerId(follower.getUser().getUserId())
+                .username(follower.getUser().getUsername())
+                .avatar(follower.getUser().getAvatar())
+                .date(follower.getFollowingDate())
+                .build();
+    }
 }
