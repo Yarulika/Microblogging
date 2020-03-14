@@ -39,7 +39,7 @@ public class UserController {
 
     @ApiOperation(value = "Get all active users", notes = "Get all active users (IsBlocked = false)")
     @GetMapping(path = "/allActive")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<UserDTO> findAllActiveUsers() {
         return userService.findAllActiveUsers()
@@ -56,7 +56,7 @@ public class UserController {
 
     @ApiOperation(value = "Find all followers by username", notes = "Find all followers of user, given his username")
     @GetMapping(path = "/{username}/followers")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<FollowerDTO> findAllFollowersByUsername(@PathVariable @NotBlank String username) {
         int id = userService.findUserByUsername(username).get().getUserId();
@@ -68,7 +68,7 @@ public class UserController {
 
     @ApiOperation(value = "Find all followings", notes = "Find all followings user follows, given his username")
     @GetMapping(path = "/{username}/followings")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<FollowerDTO> findAllFollowingByFollowerUsername(@PathVariable @NotBlank String username) {
         int id = userService.findUserByUsername(username).get().getUserId();
@@ -88,7 +88,7 @@ public class UserController {
                     user.get(),
                     followerService.countFollowersByUserId(user.get().getUserId()),
                     followerService.countFollowingByFollowerId(user.get().getUserId()));
-            return new ResponseEntity<>(userDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -104,7 +104,7 @@ public class UserController {
                     user.get(),
                     followerService.countFollowersByUserId(user.get().getUserId()),
                     followerService.countFollowingByFollowerId(user.get().getUserId()));
-            return new ResponseEntity<>(userDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

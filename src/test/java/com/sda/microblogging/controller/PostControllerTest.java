@@ -66,7 +66,7 @@ public class PostControllerTest {
                         get("/microblogging/v1/post/allPublic"))
                 .andDo(print());
         result
-                .andExpect(status().isFound())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].*", hasSize(13)))

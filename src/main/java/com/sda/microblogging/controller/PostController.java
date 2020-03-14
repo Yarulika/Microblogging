@@ -30,7 +30,7 @@ public class PostController {
 
     @ApiOperation(value = "Get all public posts", notes = "Get all public posts: isPrivate=false")
     @GetMapping("/allPublic")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<PostDTO> findAllPublicPosts() {
         return postService.findAllPostsBasedOnPrivacy(false).parallelStream().map(post -> {

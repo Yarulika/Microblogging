@@ -73,7 +73,7 @@ public class CommentController {
 
     @ApiOperation(value = "Find comments for post", notes = "Find all comments for given post id")
     @GetMapping(path = "/post/{postId}/comment")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<CommentDTO> findCommentsByPostId(@PathVariable @NotBlank int postId){
         return commentService.findCommentsByPostId(postId)
@@ -90,7 +90,7 @@ public class CommentController {
 
     @ApiOperation(value = "Find sub comments for parent comment", notes = "Find all kids comments for given parent comment id")
     @GetMapping(path = "/comment/{commentParentId}")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<CommentDTO> findCommentsByCommentParentId(@PathVariable @NotBlank int commentParentId){
         return commentService.findCommentsByCommentParentId(commentParentId)
