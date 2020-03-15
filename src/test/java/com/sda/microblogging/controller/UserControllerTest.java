@@ -24,8 +24,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -77,8 +76,7 @@ public class UserControllerTest {
         followers[1] = follower1;
         String username = user0.getUsername();
 
-        when(userService.findUserByUsername(user0.getUsername())).thenReturn(Optional.of(user0));
-        when(followerService.getAllFollowingByFollowerId(user0.getUserId())).thenReturn(Arrays.asList(followers));
+        when(followerService.getAllFollowingByFollowerUsername(user0.getUsername())).thenReturn(Arrays.asList(followers));
 
         ResultActions result = mockMvc
                 .perform(
@@ -191,25 +189,6 @@ public class UserControllerTest {
                 .andReturn();
     }
 
-    @Test void updatePassword_with_existing_user_and_correct_old_password_returns_OK() throws Exception{
-        // TODO Below is temporary: just before Security implementation
-        UserPasswordDTO userPasswordDTO = new UserPasswordDTO("password", "newPassword");
-        User user = new User(22, "username", "password", "email@email.com", false, "cool I", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-        when(userService.findUserById(any())).thenReturn(Optional.of(user));
-        when(userService.updateUserPassword(user.getUserId(), userPasswordDTO.getNewPassword())).thenReturn(user);
-
-        ResultActions resultActions = mockMvc
-                .perform(
-                        patch("/microblogging/v1/user/updatePassword?userId=22")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(userPasswordDTO)) )
-                .andDo(print());
-
-        resultActions
-                .andExpect(status().isOk())
-                .andReturn();
-    }
-
     @Test
     public void login_with_incorrect_user_details_returns_ERROR() throws Exception {
         UserLoginDTO userLoginDTO = new UserLoginDTO("email@bla.com", "pass");
@@ -224,6 +203,43 @@ public class UserControllerTest {
         resultActions
                 .andExpect(status().isNotFound())
                 .andExpect(status().reason("Invalid Email or Password"))
+                .andReturn();
+    }
+
+    @Test void updatePassword_with_existing_user_and_correct_old_password_returns_OK() throws Exception{
+        // TODO Below is temporary: just before Security implementation
+        UserPasswordDTO userPasswordDTO = new UserPasswordDTO("password", "newPassword");
+        User user = new User(22, "username", "password", "email@email.com", false, "cool I", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        when(userService.findUserById(any())).thenReturn(Optional.of(user));
+        when(userService.updateUserPassword(user.getUserId(), userPasswordDTO.getNewPassword())).thenReturn(user);
+
+        ResultActions resultActions = mockMvc
+                .perform(
+                        patch("/microblogging/v1/user/updatePassword?userId=22")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(asJsonString(userPasswordDTO)) )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test void updatePrivacy_with_correct_input_returns_OK() throws Exception {
+        UserLoginDTO userLoginDTO = new UserLoginDTO("email@email.com", "password");
+        User user = new User(22, "username", "password", "email@email.com", false, "cool I", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
+        when(userService.findUserByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userService.updateUserPrivacy(anyString(), anyBoolean())).thenReturn(user);
+
+        ResultActions resultActions = mockMvc
+                .perform(
+                        patch("/microblogging/v1/user/updateIsPrivate/true")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(asJsonString(userLoginDTO))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print());
+        resultActions
+                .andExpect(status().isOk())
                 .andReturn();
     }
 
