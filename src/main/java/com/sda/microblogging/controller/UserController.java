@@ -6,8 +6,6 @@ import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.FollowerDTOMapper;
 import com.sda.microblogging.entity.mapper.UserDTOMapper;
 import com.sda.microblogging.exception.InvalidEmailOrPasswordException;
-import com.sda.microblogging.exception.UserAlreadyHasRequestedPrivacyException;
-import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.service.FollowerService;
 import com.sda.microblogging.service.UserService;
 import io.swagger.annotations.ApiOperation;

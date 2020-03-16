@@ -4,7 +4,6 @@ import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
-import com.sda.microblogging.exception.UserAlreadyHasRequestedPrivacyException;
 import com.sda.microblogging.exception.UserDetailsFoundException;
 import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.repository.UserRepository;
@@ -110,16 +109,6 @@ public class UserServiceTest {
 
         userService.updateUserPrivacy(expectedUser.getEmail(), true);
         verify(userRepository, times(1)).save(any(User.class));
-    }
-
-    @Test
-    public void updateUserPrivacy_returns_exception_if_isPrivate_same() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(expectedUser));
-
-        Exception exception = assertThrows(UserAlreadyHasRequestedPrivacyException.class, () -> {
-            userService.updateUserPrivacy(expectedUser.getEmail(), false);
-        });
-        assertThat(exception.getMessage()).contains("User already has this privacy");
     }
 
     @Test

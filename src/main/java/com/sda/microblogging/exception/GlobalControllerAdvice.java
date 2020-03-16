@@ -31,11 +31,6 @@ public class GlobalControllerAdvice {
         response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 
-    @ExceptionHandler(UserAlreadyHasRequestedPrivacyException.class)
-    public void handleUserAlreadyHasRequestedPrivacyException(UserAlreadyHasRequestedPrivacyException exception, HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
-    }
-
     @ExceptionHandler(UserNotFoundException.class)
     public void handleUserNotFoundException(UserNotFoundException exception, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());

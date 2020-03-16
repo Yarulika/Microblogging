@@ -1,13 +1,10 @@
 package com.sda.microblogging.service;
 
 import com.sda.microblogging.entity.User;
-import com.sda.microblogging.exception.UserAlreadyHasRequestedPrivacyException;
 import com.sda.microblogging.exception.UserDetailsFoundException;
 import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -50,17 +47,9 @@ public class UserService {
     }
 
     public User updateUserPrivacy(@NotBlank String userEmail, boolean isPrivate) {
-        Optional<User> user = userRepository.findByEmail(userEmail);
-        if (user.isPresent()) {
-            if (user.get().isPrivate() != isPrivate) {
-                user.get().setPrivate(isPrivate);
-                return userRepository.save(user.get());
-            } else {
-                throw new UserAlreadyHasRequestedPrivacyException();
-            }
-        } else {
-            throw new UserNotFoundException();
-        }
+        User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        user.setPrivate(isPrivate);
+        return userRepository.save(user);
     }
 
     public Optional<User> findUserByUsername(@NotBlank String username) {
