@@ -152,4 +152,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
+    @ApiOperation(value = "Update user privacy", notes = "Update user privacy")
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(path = "/updateIsPrivate/{isPrivate}")
+    public ResponseEntity updatePrivacy(@NotNull @PathVariable boolean isPrivate, @RequestBody UserLoginDTO userLoginDTO){
+        //TODO below shall be changed after Security
+        Optional<User> updatingUser = userService.findUserByEmail(userLoginDTO.getEmail());
+        if (updatingUser.isPresent() && updatingUser.get().getPassword().equals(userLoginDTO.getPassword())) {
+            userService.updateUserPrivacy(userLoginDTO.getEmail(), isPrivate);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            throw new InvalidEmailOrPasswordException();
+        }
+    }
 }

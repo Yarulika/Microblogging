@@ -46,6 +46,12 @@ public class UserService {
         }
     }
 
+    public User updateUserPrivacy(@NotBlank String userEmail, boolean isPrivate) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        user.setPrivate(isPrivate);
+        return userRepository.save(user);
+    }
+
     public Optional<User> findUserByUsername(@NotBlank String username) {
         return userRepository.findByUsername(username);
     }
@@ -69,4 +75,5 @@ public class UserService {
     public List<User> findAllActiveUsers(){
         return userRepository.findAllByIsBlocked(false);
     }
+
 }
