@@ -25,25 +25,19 @@ public class UserService {
     }
 
     public User save(@Valid @NotNull User user) {
-        if (findUserByUsername(user.getUsername()).isPresent()){
+        if (findUserByUsername(user.getUsername()).isPresent()) {
             throw new UserDetailsFoundException("Person with username: " + user.getUsername() + "already exists");
-        }
-        else if (findUserByEmail(user.getEmail()).isPresent()){
+        } else if (findUserByEmail(user.getEmail()).isPresent()) {
             throw new UserDetailsFoundException("Person with email: " + user.getEmail() + "already exists");
         }
         return userRepository.save(user);
     }
 
     public User updateUserPassword(@NotBlank Integer userId, @NotBlank @Size(min = 1, max = 45) String newPassword) {
-        Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        else {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         // TODO after Security:  user.setPassword(passwordEncoder.encode(password));
-            user.get().setPassword(newPassword);
-            return userRepository.save(user.get());
-        }
+        user.setPassword(newPassword);
+        return userRepository.save(user);
     }
 
     public User updateUserPrivacy(@NotBlank String userEmail, boolean isPrivate) {
@@ -65,15 +59,11 @@ public class UserService {
     }
 
     public User update(@Valid @NotNull User updatedUser) {
-        if (findUserById(updatedUser.getUserId()).isPresent()) {
-            return userRepository.save(updatedUser);
-        } else {
-            throw new UserNotFoundException();
-        }
+        findUserById(updatedUser.getUserId()).orElseThrow(UserNotFoundException::new);
+        return userRepository.save(updatedUser);
     }
 
-    public List<User> findAllActiveUsers(){
+    public List<User> findAllActiveUsers() {
         return userRepository.findAllByIsBlocked(false);
     }
-
 }
