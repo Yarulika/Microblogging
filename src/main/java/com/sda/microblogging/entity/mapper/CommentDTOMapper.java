@@ -48,6 +48,7 @@ public class CommentDTOMapper {
                 .content(comment.getContent())
                 .postId(comment.getPost().getId())
                 .userOwnerId(comment.getOwner().getUserId())
+                .creationDate(comment.getCreationDate())
                 .build();
     }
 

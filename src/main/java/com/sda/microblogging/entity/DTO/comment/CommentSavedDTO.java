@@ -2,6 +2,8 @@ package com.sda.microblogging.entity.DTO.comment;
 
 import lombok.*;
 
+import java.sql.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,4 +14,5 @@ public class CommentSavedDTO {
     private String content;
     private int postId;
     private int userOwnerId;
+    private Date creationDate;
 }
