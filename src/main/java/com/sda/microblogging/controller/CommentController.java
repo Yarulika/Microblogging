@@ -5,7 +5,10 @@ import com.sda.microblogging.entity.CommentLike;
 import com.sda.microblogging.entity.DTO.comment.CommentDTO;
 import com.sda.microblogging.entity.DTO.comment.CommentNewInputDTO;
 import com.sda.microblogging.entity.DTO.comment.CommentSavedDTO;
+import com.sda.microblogging.entity.DTO.commentLike.CommentLikeNewDTO;
 import com.sda.microblogging.entity.mapper.CommentDTOMapper;
+import com.sda.microblogging.entity.mapper.CommentLikeDTOMapper;
+import com.sda.microblogging.exception.CommentNotFoundException;
 import com.sda.microblogging.exception.ParentCommentNotFoundException;
 import com.sda.microblogging.exception.PostNotFoundException;
 import com.sda.microblogging.exception.UserNotFoundException;
@@ -30,6 +33,7 @@ public class CommentController {
     private CommentService commentService;
     private CommentLikeService commentLikeService;
     private CommentDTOMapper commentDtoMapper;
+    private CommentLikeDTOMapper commentLikeDtoMapper;
     private PostService postService;
     private UserService userService;
 
@@ -38,11 +42,13 @@ public class CommentController {
             CommentService commentService,
             CommentLikeService commentLikeService,
             CommentDTOMapper commentDtoMapper,
+            CommentLikeDTOMapper commentLikeDTOMapper,
             PostService postService,
             UserService userService) {
         this.commentService = commentService;
         this.commentLikeService = commentLikeService;
         this.commentDtoMapper = commentDtoMapper;
+        this.commentLikeDtoMapper = commentLikeDTOMapper;
         this.postService = postService;
         this.userService = userService;
     }
@@ -70,7 +76,11 @@ public class CommentController {
     @ApiOperation(value = "Toggle comment like", notes = "Add or delete comment like")
     @PostMapping(path = "/comment/like")
     @ResponseStatus(HttpStatus.CREATED)
-    public void toggleCommentLike(@Valid @RequestBody CommentLike commentLike) {
+    public void toggleCommentLike(@Valid @RequestBody CommentLikeNewDTO commentLikeNewDTO) {
+        CommentLike commentLike = commentLikeDtoMapper.toCommentLike(
+                commentService.findCommentById(commentLikeNewDTO.getCommentId()).orElseThrow(CommentNotFoundException::new),
+                userService.findUserById(commentLikeNewDTO.getUserId()).orElseThrow(UserNotFoundException::new)
+        );
         commentLikeService.toggleCommentLike(commentLike);
     }
 

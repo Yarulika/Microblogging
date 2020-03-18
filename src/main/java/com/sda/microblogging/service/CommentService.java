@@ -30,6 +30,7 @@ public class CommentService {
     }
 
     public Comment save(@Valid @NotNull Comment comment) {
+        postService.findPostById(comment.getPost().getId()).orElseThrow(PostNotFoundException::new);
         if (!postService.findPostById(comment.getPost().getId()).isPresent()) {
             throw new PostNotFoundException();
         }
