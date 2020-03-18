@@ -6,6 +6,7 @@ import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.FollowerDTOMapper;
 import com.sda.microblogging.entity.mapper.UserDTOMapper;
 import com.sda.microblogging.exception.InvalidEmailOrPasswordException;
+import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.service.FollowerService;
 import com.sda.microblogging.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -82,32 +83,24 @@ public class UserController {
     @GetMapping(path = "/{username}")
     @ResponseBody
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable @NotNull String username) {
-        Optional<User> user = userService.findUserByUsername(username);
-        if (user.isPresent()) {
-            UserDTO userDTO = userDTOMapper.toUserDto(
-                    user.get(),
-                    followerService.countFollowersByUserId(user.get().getUserId()),
-                    followerService.countFollowingByFollowerId(user.get().getUserId()));
-            return new ResponseEntity<>(userDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        User user = userService.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
+        UserDTO userDTO = userDTOMapper.toUserDto(
+                user,
+                followerService.countFollowersByUserId(user.getUserId()),
+                followerService.countFollowingByFollowerId(user.getUserId()));
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Find user by email", notes = "Find user by email address")
     @GetMapping(path = "/byEmail/{email}")
     @ResponseBody
     public ResponseEntity<UserDTO> getUserByEmail(@PathVariable @NotNull String email) {
-        Optional<User> user = userService.findUserByEmail(email);
-        if (user.isPresent()) {
-            UserDTO userDTO = userDTOMapper.toUserDto(
-                    user.get(),
-                    followerService.countFollowersByUserId(user.get().getUserId()),
-                    followerService.countFollowingByFollowerId(user.get().getUserId()));
-            return new ResponseEntity<>(userDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        User user = userService.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
+        UserDTO userDTO = userDTOMapper.toUserDto(
+                user,
+                followerService.countFollowersByUserId(user.getUserId()),
+                followerService.countFollowingByFollowerId(user.getUserId()));
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Sign up new user", notes = "Saves new user - returns UserSavedDTO with minimum info")
@@ -156,7 +149,7 @@ public class UserController {
     @ApiOperation(value = "Update user privacy", notes = "Update user privacy")
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(path = "/updateIsPrivate/{isPrivate}")
-    public ResponseEntity updatePrivacy(@NotNull @PathVariable boolean isPrivate, @RequestBody UserLoginDTO userLoginDTO){
+    public ResponseEntity updatePrivacy(@NotNull @PathVariable boolean isPrivate, @RequestBody UserLoginDTO userLoginDTO) {
         //TODO below shall be changed after Security
         Optional<User> updatingUser = userService.findUserByEmail(userLoginDTO.getEmail());
         if (updatingUser.isPresent() && updatingUser.get().getPassword().equals(userLoginDTO.getPassword())) {
