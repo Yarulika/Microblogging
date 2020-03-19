@@ -103,11 +103,11 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUserPrivacy_returns_user_if_his_details_were_not_found_and_isPrivate_differs_from_current(){
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(expectedUser));
+    public void updateUserPrivacy_returns_user_if_his_details_were_found(){
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
         when(userRepository.save(any(User.class))).thenReturn(expectedUser);
 
-        userService.updateUserPrivacy(expectedUser.getEmail(), true);
+        userService.updateUserPrivacy(expectedUser.getUserId(), true);
         verify(userRepository, times(1)).save(any(User.class));
     }
 

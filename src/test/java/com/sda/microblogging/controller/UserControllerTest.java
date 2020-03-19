@@ -2,6 +2,7 @@ package com.sda.microblogging.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
+import com.sda.microblogging.entity.DTO.user.UserIdDTO;
 import com.sda.microblogging.entity.DTO.user.UserLoginDTO;
 import com.sda.microblogging.entity.DTO.user.UserPasswordDTO;
 import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
@@ -226,16 +227,14 @@ public class UserControllerTest {
     }
 
     @Test void updatePrivacy_with_correct_input_returns_OK() throws Exception {
-        UserLoginDTO userLoginDTO = new UserLoginDTO("email@email.com", "password");
+        UserIdDTO userIdDTO = new UserIdDTO(22);
         User user = new User(22, "username", "password", "email@email.com", false, "cool I", false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-        when(userService.findUserByEmail(anyString())).thenReturn(Optional.of(user));
-        when(userService.updateUserPrivacy(anyString(), anyBoolean())).thenReturn(user);
 
         ResultActions resultActions = mockMvc
                 .perform(
                         patch("/microblogging/v1/user/updateIsPrivate/true")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(userLoginDTO))
+                                .content(asJsonString(userIdDTO))
                                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
         resultActions

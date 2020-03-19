@@ -40,8 +40,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUserPrivacy(@NotBlank String userEmail, boolean isPrivate) {
-        User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+    public User updateUserPrivacy(@NotBlank Integer userId, boolean isPrivate) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         user.setPrivate(isPrivate);
         return userRepository.save(user);
     }
