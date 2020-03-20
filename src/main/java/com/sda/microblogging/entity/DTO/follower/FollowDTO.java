@@ -1,18 +1,19 @@
 package com.sda.microblogging.entity.DTO.follower;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class FollowDTO {
     @NotNull
-    private Integer userId;
+    private Integer followerId;
     @NotNull
     private Integer followingId;
-    @NotNull
-    private Date followingDate;
 }

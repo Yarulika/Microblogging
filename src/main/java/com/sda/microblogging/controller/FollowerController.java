@@ -2,7 +2,9 @@ package com.sda.microblogging.controller;
 
 import com.sda.microblogging.entity.DTO.follower.FollowDTO;
 import com.sda.microblogging.entity.DTO.follower.FollowerDTO;
+import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.mapper.FollowerDTOMapper;
+import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.service.FollowerService;
 import com.sda.microblogging.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +36,12 @@ public class FollowerController {
     @PostMapping("/follow")
     @ResponseBody
     public FollowerDTO followUser(@RequestBody @Valid FollowDTO followDTO) {
-        return followerDTOMapper.toFollowerDTO(followerService.followUser(followDTO));
+        Follower follower = followerDTOMapper.fromFollowDTOtoFollower(
+                userService.findUserById(followDTO.getFollowingId()).orElseThrow(UserNotFoundException::new),
+                userService.findUserById(followDTO.getFollowerId()).orElseThrow(UserNotFoundException::new)
+        );
+        Follower savedFollower = followerService.followUser(follower);
+        return followerDTOMapper.toFollowerDTO(savedFollower);
     }
 
     @ApiOperation(value = "UnFollow user")
@@ -42,7 +49,9 @@ public class FollowerController {
     @ResponseBody
     @Transactional
     public void unFollow(@RequestBody @Valid FollowDTO followDTO) {
-        followerService.unFollowUser(followDTO.getUserId(), followDTO.getFollowingId());
+        userService.findUserById(followDTO.getFollowingId()).orElseThrow(UserNotFoundException::new);
+        userService.findUserById(followDTO.getFollowerId()).orElseThrow(UserNotFoundException::new);
+        followerService.unFollowUser(followDTO.getFollowerId(), followDTO.getFollowingId());
     }
 
     @ApiOperation(value = "Find all followers by username", notes = "Find all followers of user, given his username")
