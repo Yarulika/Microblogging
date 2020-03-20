@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sda.microblogging.common.RoleTitle;
 import com.sda.microblogging.entity.*;
 import com.sda.microblogging.entity.DTO.comment.CommentNewInputDTO;
+import com.sda.microblogging.entity.DTO.commentLike.CommentLikeNewDTO;
 import com.sda.microblogging.service.CommentLikeService;
 import com.sda.microblogging.service.CommentService;
 import com.sda.microblogging.service.PostService;
@@ -62,6 +63,7 @@ public class CommentControllerTest {
     public Comment[] comments;
     public CommentLike commentLike;
     public CommentNewInputDTO commentNewInputDTO;
+    public CommentLikeNewDTO commentLikeNewDTO;
 
     @BeforeEach
     public void initTestData(){
@@ -78,6 +80,7 @@ public class CommentControllerTest {
         comments[3] = comment4;
         commentLike = new CommentLike(1, comment1, user, Date.valueOf("2020-02-02"));
         commentNewInputDTO = new CommentNewInputDTO("comments content1", post.getId(), user.getUserId(), comment1.getId());
+        commentLikeNewDTO = new CommentLikeNewDTO(comment1.getId(), user.getUserId());
     }
 
     @Test
@@ -99,17 +102,20 @@ public class CommentControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.*").isArray())
-                .andExpect(jsonPath("$.*", hasSize(4)))
+                .andExpect(jsonPath("$.*", hasSize(5)))
                 .andReturn();
     }
 
     @Test
     public void toggleCommentLike_returns_status_Created() throws Exception{
+        when(commentService.findCommentById(anyInt())).thenReturn(Optional.of(comment1));
+        when(userService.findUserById(anyInt())).thenReturn(Optional.of(user));
+
         ResultActions result = mockMvc
                 .perform(
                         post("/microblogging/v1/comment/like")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentLike))
+                        .content(objectMapper.writeValueAsString(commentLikeNewDTO))
                 )
                 .andDo(print());
         result

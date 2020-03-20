@@ -1,9 +1,6 @@
 package com.sda.microblogging.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,6 +11,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
