@@ -59,7 +59,7 @@ public class FollowerController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<FollowerDTO> findAllFollowersByUsername(@PathVariable @NotBlank String username) {
-        int id = userService.findUserByUsername(username).get().getUserId();
+        int id = userService.findUserByUsername(username).orElseThrow(UserNotFoundException::new).getUserId();
         return followerService.getAllFollowersByUserId(id)
                 .parallelStream()
                 .map(follower -> followerDTOMapper.toFollowerDTO(follower))

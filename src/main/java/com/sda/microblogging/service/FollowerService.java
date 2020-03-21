@@ -2,6 +2,8 @@ package com.sda.microblogging.service;
 
 import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.User;
+import com.sda.microblogging.exception.UserAlreadyFollowedException;
+import com.sda.microblogging.exception.UserAlreadyNotFollowedException;
 import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.repository.FollowerRepository;
 import com.sda.microblogging.repository.UserRepository;
@@ -27,26 +29,21 @@ public class FollowerService {
 
     public Follower followUser(@Valid @NotNull Follower follower) {
         if (followerRepository.findFollowerByUserUserIdAndFollowerUserId(follower.getUser().getUserId(), follower.getFollower().getUserId()).isPresent()) {
-            throw new RuntimeException("User already followed");
+            throw new UserAlreadyFollowedException();
         }
         return followerRepository.save(follower);
     }
 
     public void unFollowUser(Integer userId, Integer followerId) {
         if (!followerRepository.findFollowerByUserUserIdAndFollowerUserId(followerId, userId).isPresent()) {
-            throw new RuntimeException("User has been already unfollowed");
+            throw new UserAlreadyNotFollowedException();
         }
-
         followerRepository.deleteByUserUserIdAndFollowerUserId(followerId, userId);
     }
 
     public List<Follower> getAllFollowersByUserId(Integer userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            return followerRepository.findAllFollowersByUser(user.get());
-        } else {
-            throw new UserNotFoundException();
-        }
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return followerRepository.findAllFollowersByUser(user);
     }
 
     public int countFollowersByUserId(Integer userId) {
@@ -54,12 +51,8 @@ public class FollowerService {
     }
 
     public List<Follower> getAllFollowingByFollowerId(Integer followerId) {
-        Optional<User> follower = userRepository.findById(followerId);
-        if (follower.isPresent()) {
-            return followerRepository.findAllFollowingByFollower(follower.get());
-        } else {
-            throw new UserNotFoundException();
-        }
+        User follower = userRepository.findById(followerId).orElseThrow(UserNotFoundException::new);
+        return followerRepository.findAllFollowingByFollower(follower);
     }
 
     public int countFollowingByFollowerId(Integer followerId) {
