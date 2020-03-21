@@ -54,24 +54,22 @@ public class FollowerController {
         followerService.unFollowUser(followDTO.getFollowerId(), followDTO.getFollowingId());
     }
 
-    @ApiOperation(value = "Find all followers by username", notes = "Find all followers of user, given his username")
+    @ApiOperation(value = "Find all followers by following username", notes = "Find all followers of following user, given his username")
     @GetMapping(path = "/{username}/followers")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Iterable<FollowerDTO> findAllFollowersByUsername(@PathVariable @NotBlank String username) {
-        int id = userService.findUserByUsername(username).orElseThrow(UserNotFoundException::new).getUserId();
-        return followerService.getAllFollowersByUserId(id)
+    public Iterable<FollowerDTO> findAllFollowersByFollowingUsername(@PathVariable @NotBlank String username) {
+        return followerService.getAllFollowersByFollowingUsername(username)
                 .parallelStream()
                 .map(follower -> followerDTOMapper.toFollowerDTO(follower))
                 .collect(Collectors.toList());
     }
 
-    @ApiOperation(value = "Find all followings by username", notes = "Find all followings user follows, given his username")
+    @ApiOperation(value = "Find all followings by follower username", notes = "Find all followings user follows, given his username")
     @GetMapping(path = "/{username}/followings")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Iterable<FollowerDTO> findAllFollowingByFollowerUsername(@PathVariable @NotBlank String username) {
-
         return followerService.getAllFollowingByFollowerUsername(username)
                 .parallelStream()
                 .map(follower -> followerDTOMapper.convertFollowerForFollowingDTO(follower))

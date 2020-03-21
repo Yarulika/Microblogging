@@ -64,6 +64,12 @@ public class FollowerService {
     }
 
     public List<Follower> getAllFollowingByFollowerUsername(String username) {
+        userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         return followerRepository.findFollowerByFollowerUsername(username);
+    }
+
+    public List<Follower> getAllFollowersByFollowingUsername(String followingUsername) {
+        userRepository.findByUsername(followingUsername).orElseThrow(UserNotFoundException::new);
+        return followerRepository.findFollowerByUserUsername(followingUsername);
     }
 }

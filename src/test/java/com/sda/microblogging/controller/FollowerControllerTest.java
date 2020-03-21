@@ -18,16 +18,13 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.sql.Date;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -61,8 +58,7 @@ public class FollowerControllerTest {
 
     @Test
     public void findAllFollowersByUsername_returns_collection_OK_status() throws Exception {
-        when(userService.findUserByUsername(anyString())).thenReturn(Optional.of(user0));
-        when(followerService.getAllFollowersByUserId(anyInt())).thenReturn(Arrays.asList(followers));
+        when(followerService.getAllFollowersByFollowingUsername(anyString())).thenReturn(Arrays.asList(followers));
 
         ResultActions result = mockMvc
                 .perform(
