@@ -45,4 +45,14 @@ public class GlobalControllerAdvice {
     public void handlePostContentNotFoundException(PostContentNotFoundException exception, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
+
+    @ExceptionHandler(UserAlreadyFollowedException.class)
+    public void handleUserAlreadyFollowedException(UserAlreadyFollowedException exception, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.CONFLICT.value(), exception.getMessage());
+    }
+
+    @ExceptionHandler(UserAlreadyNotFollowedException.class)
+    public void handleUserAlreadyNotFollowedException(UserAlreadyNotFollowedException exception, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+    }
 }

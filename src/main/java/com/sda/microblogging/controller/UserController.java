@@ -1,6 +1,5 @@
 package com.sda.microblogging.controller;
 
-import com.sda.microblogging.entity.DTO.follower.FollowerDTO;
 import com.sda.microblogging.entity.DTO.user.*;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.entity.mapper.FollowerDTOMapper;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,30 +50,6 @@ public class UserController {
                             followerService.countFollowingByFollowerId(user.getUserId()));
                     return userDTO;
                 })
-                .collect(Collectors.toList());
-    }
-
-    @ApiOperation(value = "Find all followers by username", notes = "Find all followers of user, given his username")
-    @GetMapping(path = "/{username}/followers")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public Iterable<FollowerDTO> findAllFollowersByUsername(@PathVariable @NotBlank String username) {
-        int id = userService.findUserByUsername(username).get().getUserId();
-        return followerService.getAllFollowersByUserId(id)
-                .parallelStream()
-                .map(follower -> followerDTOMapper.toFollowerDTO(follower))
-                .collect(Collectors.toList());
-    }
-
-    @ApiOperation(value = "Find all followings", notes = "Find all followings user follows, given his username")
-    @GetMapping(path = "/{username}/followings")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public Iterable<FollowerDTO> findAllFollowingByFollowerUsername(@PathVariable @NotBlank String username) {
-
-        return followerService.getAllFollowingByFollowerUsername(username)
-                .parallelStream()
-                .map(follower -> followerDTOMapper.convertFollowerForFollowingDTO(follower))
                 .collect(Collectors.toList());
     }
 

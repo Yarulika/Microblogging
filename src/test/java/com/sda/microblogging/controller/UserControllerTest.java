@@ -6,7 +6,6 @@ import com.sda.microblogging.entity.DTO.user.UserIdDTO;
 import com.sda.microblogging.entity.DTO.user.UserLoginDTO;
 import com.sda.microblogging.entity.DTO.user.UserPasswordDTO;
 import com.sda.microblogging.entity.DTO.user.UserSignUpDTO;
-import com.sda.microblogging.entity.Follower;
 import com.sda.microblogging.entity.Role;
 import com.sda.microblogging.entity.User;
 import com.sda.microblogging.service.FollowerService;
@@ -25,7 +24,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -56,32 +56,6 @@ public class UserControllerTest {
         ResultActions result = mockMvc
                 .perform(
                         get("/microblogging/v1/user/allActive"))
-                .andDo(print());
-        result
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.*").isArray())
-                .andExpect(jsonPath("$.*", hasSize(2)))
-                .andReturn();
-    }
-
-    @Test
-    public void getAllFollowingUsers_returns_collection_OK_status() throws Exception{
-        User user0 = new User(1, "username0", "password0", "email0@mail.com", true, null, false, Date.valueOf("2020-01-01"), new Role(2, RoleTitle.USER), null);
-        User user1 = new User(2, "username1", "password1", "email1mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null);
-        User user2 = new User(3, "username2", "password2", "email2mail.com", true, null, false, Date.valueOf("2020-02-02"), new Role(2, RoleTitle.USER), null);
-        Follower follower0 = new Follower(1, user0, user1, Date.valueOf("2020-01-01"));
-        Follower follower1 = new Follower(2, user0, user2, Date.valueOf("2020-01-01"));
-        Follower[] followers = new Follower[2];
-        followers[0] = follower0;
-        followers[1] = follower1;
-        String username = user0.getUsername();
-
-        when(followerService.getAllFollowingByFollowerUsername(user0.getUsername())).thenReturn(Arrays.asList(followers));
-
-        ResultActions result = mockMvc
-                .perform(
-                        get("/microblogging/v1/user/username0/followings"))
                 .andDo(print());
         result
                 .andExpect(status().isOk())
