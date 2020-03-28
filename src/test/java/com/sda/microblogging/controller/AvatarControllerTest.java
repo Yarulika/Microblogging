@@ -42,7 +42,7 @@ class AvatarControllerTest {
         byte[] avatarFileBytes = "some img".getBytes();
         MockMultipartFile avatarFile = new MockMultipartFile("avatar", "filename.txt", "text/plain", avatarFileBytes);
 
-        when(avatarService.saveAvatar(anyInt(), isA(byte[].class))).thenReturn(user);
+        when(avatarService.saveAvatar(anyInt(), isA(byte[].class))).thenReturn("localhost:8080/microblogging/v1/user/avatar/?avatarPath=/tmp/avatars/anna.jpeg");
 
         ResultActions result = mockMvc
                 .perform(multipart("/microblogging/v1/user/uploadAvatar")

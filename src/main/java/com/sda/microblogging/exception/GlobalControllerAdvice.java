@@ -55,4 +55,9 @@ public class GlobalControllerAdvice {
     public void handleUserAlreadyNotFollowedException(UserAlreadyNotFollowedException exception, HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
+
+    @ExceptionHandler(AvatarNotExistsException.class)
+    public void handleAvatarNotExistsException(AvatarNotExistsException exception, HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+    }
 }
