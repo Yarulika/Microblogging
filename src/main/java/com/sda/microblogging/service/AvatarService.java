@@ -1,20 +1,22 @@
 package com.sda.microblogging.service;
 
 import com.sda.microblogging.entity.User;
+import com.sda.microblogging.exception.AvatarNotExistsException;
 import com.sda.microblogging.exception.UserNotFoundException;
 import com.sda.microblogging.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotBlank;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Optional;
+import java.io.*;
 
 @Service
 public class AvatarService {
+    @Value("${avatars.base.get.url}")
+    private String avatarsBaseGetURL;
+    @Value("${avatars.base.path}")
+    private String avatarsBasePath;
 
     private UserRepository userRepository;
 
@@ -23,33 +25,41 @@ public class AvatarService {
         this.userRepository = userRepository;
     }
 
-    public User saveAvatar(@NotBlank Integer userId, byte[] imageData) throws IOException {
+    public String saveAvatar(@NotBlank Integer userId, byte[] imageData) throws IOException {
         // TODO: will implement later saving img on some media server
-        Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
-            throw new UserNotFoundException();
-        }  {
-            FileOutputStream fos = null;
-            String imgPath = "src/main/resources/static/avatar/" + user.get().getUsername() + ".jpg";
-            String imgPathForShare = "/avatar/" + user.get().getUsername() + ".jpg";
 
-            try {
-                fos = new FileOutputStream(new File(imgPath));
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                baos.write(imageData);
-                baos.writeTo(fos);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        String avatarPath = getAvatarPath(user.getUsername());
 
-                user.get().setAvatar(imgPathForShare);
-                userRepository.save(user.get());
-                return user.get();
+        FileOutputStream fos = null;
+        try {
+            File avatar = new File(avatarPath);
+            fos = new FileOutputStream(avatar);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            baos.write(imageData);
+            baos.writeTo(fos);
+            user.setAvatar(avatarPath);
+            userRepository.save(user);
+            return avatarsBaseGetURL + avatar.getAbsolutePath();
+        } catch (IOException ioe) {
+            System.err.println("Problem writing to the file " + avatarPath);
+            ioe.printStackTrace();
+            throw ioe;
+        } finally {
+            fos.close();
+        }
+    }
 
-            } catch (IOException ioe) {
-                System.err.println("Problem writing to the file " + imgPath);
-                ioe.printStackTrace();
-                throw ioe;
-            } finally {
-                fos.close();
-            }
+    public String getAvatarPath(String username) {
+        return avatarsBasePath + File.separator + username + ".jpeg";
+    }
+
+    public InputStream getAvatar(String imageURl) {
+        try {
+            FileInputStream image = new FileInputStream(imageURl);
+            return image;
+        } catch (FileNotFoundException ex) {
+            throw new AvatarNotExistsException();
         }
     }
 }
